@@ -19,29 +19,37 @@ namespace develop_timeline
         public Animator PosB;
         public Animator DefaultUnitA;
 
+        [Space(10)]
         // 逆再生用
         //[Header("逆再生機能　ON/OFF")]
         //private bool IsReversing;
         public float Speed = 1.0f;
         public float ChangeTime = 0.05f;
 
+        [Space(10)]
         // Debug
         public PlayableAsset DebugPlayable;
         public Animator DebugUnitB;
+        public bool IsDebugPlay;
+        public bool IsPlayerControl;
 
         private PlayableDirector _playingDirector;
 
         void Update()
         {
             // Debug
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (IsDebugPlay)
             {
-                OnSetPlayDirector(DebugPlayable, unitA: DefaultUnitA, unitB: DebugUnitB, overrideDirector: null);
+                if (Input.GetKeyDown(KeyCode.Alpha1))
+                    OnSetPlayDirector(DebugPlayable, unitA: DefaultUnitA, unitB: DebugUnitB, overrideDirector: null);
+                if (Input.GetKeyDown(KeyCode.Alpha2))
+                    OnSetPlayDirector(DebugPlayable, unitA: DefaultUnitA, unitB: DebugUnitB, overrideDirector: null, playPosition: new Vector3(0, 10, 0), playRotation: new Vector3(0, 45, 0));
             }
 
-            if (_playingDirector == null)
-                return;
 
+            if (_playingDirector == null) return;
+
+            if (!IsPlayerControl) return;
             // Init Play
             if (Input.GetKeyDown(KeyCode.F))
             {
@@ -51,12 +59,12 @@ namespace develop_timeline
             // Back Play
             if (Input.GetKeyDown(KeyCode.A))
             {
-                ChangeSpeed(-Speed, ChangeTime);
+                ChangePlaySpeed(-Speed, ChangeTime);
             }
             // Forward Play
             if (Input.GetKeyDown(KeyCode.D))
             {
-                ChangeSpeed(Speed, ChangeTime);
+                ChangePlaySpeed(Speed, ChangeTime);
             }
             //if (Input.GetKeyDown(KeyCode.E))
             //{
@@ -73,7 +81,7 @@ namespace develop_timeline
                 }
         }
 
-        public void ChangeSpeed(float newSpeed, float duration)
+        public void ChangePlaySpeed(float newSpeed, float duration)
         {
             float currentSpeed = (float)_playingDirector.playableGraph.GetRootPlayable(0).GetSpeed();
             DOTween.To(() => currentSpeed, x =>
@@ -90,7 +98,7 @@ namespace develop_timeline
         /// <param name="unitB">敵のAnimator</param>
         /// <param name="playerParent">プレイヤーの位置管理オブジェクト</param>
         /// <param name="enemyParent">敵の位置管理オブジェクト</param>
-        public void OnSetPlayDirector(PlayableAsset asset, Animator unitA = null, Animator unitB = null, PlayableDirector overrideDirector = null)
+        public void OnSetPlayDirector(PlayableAsset asset, Animator unitA = null, Animator unitB = null, PlayableDirector overrideDirector = null, Vector3 playPosition = default, Vector3 playRotation = default)
         {
             var unitATrackName = "UnitA";
             var unitBTrackName = "UnitB";
@@ -103,14 +111,20 @@ namespace develop_timeline
             else if (_playingDirector == null)
                 _playingDirector = DefaultDirector;
 
+            // Play Pos Rot
+            if (playPosition != default)
+                transform.position = playPosition;
+            if (playRotation != default)
+                transform.rotation = Quaternion.Euler(playRotation);
+
             // PlayerAnimator
             if (unitA == null)
                 unitA = DefaultUnitA;
 
             // Bind Pos
-            if(PosA != null)
+            if (PosA != null)
                 BindAnimatorTrackDirector(_playingDirector, asset, posATrackName, PosA);
-            if(PosB != null)
+            if (PosB != null)
                 BindAnimatorTrackDirector(_playingDirector, asset, posBTrackName, PosB);
 
             // UnitA
@@ -118,6 +132,7 @@ namespace develop_timeline
             {
                 if (PosA != null)
                 {
+                    // offsetどうする？キャラ大きいとか小さいとか
                     unitA.transform.parent = PosA.transform;//親を設定
                     unitA.transform.localPosition = Vector3.zero; // 座標を親に合わせる
                     unitA.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
@@ -146,10 +161,17 @@ namespace develop_timeline
             _playingDirector.SetGenericBinding(brainTrack.sourceObject, Brain);
 
             // DirectorPlay
+            _playingDirector.time = 0.01f;
             _playingDirector.Play();
             //DebugPlayable.Instance.ChangeSpeed(1, 0.05f);
         }
-
+        /// <summary>
+        /// TrackBind
+        /// </summary>
+        /// <param name="director"></param>
+        /// <param name="asset"></param>
+        /// <param name="trackName"></param>
+        /// <param name="animator"></param>
         private void BindAnimatorTrackDirector(PlayableDirector director, PlayableAsset asset, string trackName, Animator animator)
         {
             // 存在すれば、指定されたディレクターにタイムラインをセット
