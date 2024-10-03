@@ -133,6 +133,8 @@ namespace develop_timeline
         private void LineGameStop()
         {
             Debug.Log("LineGameStop");
+
+            DirectorManager.Instance.FinishPlayable();
             // Movie終了処理を実行する
             //TimelineManager.Instance.OnEndDirectorAsync();
         }

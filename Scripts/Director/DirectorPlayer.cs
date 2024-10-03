@@ -13,6 +13,10 @@ namespace develop_timeline
     public class DirectorPlayer : SingletonMonoBehaviour<DirectorPlayer>
     {
         [Space(10)]
+        public bool IsFinishSetParameterA;
+        // 終了時に実行したいパラメーター
+
+        [Space(10)]
         public PlayableDirector Director;
         public Animator PositionA;
         public Animator PositionB;
@@ -29,6 +33,8 @@ namespace develop_timeline
         public bool IsPlayableControl;
 
         private CinemachineBrain _brain;
+        private GameObject _unitA;
+        private GameObject _unitB;
 
 
         void Update()
@@ -101,6 +107,8 @@ namespace develop_timeline
             var posATrackName = "PosA";
             var posBTrackName = "PosB";
 
+            DirectorManager.Instance.SetPlayDirector(Director);
+
             _brain = Camera.main.GetComponent<CinemachineBrain>();
 
             // Bind Pos
@@ -121,6 +129,7 @@ namespace develop_timeline
                 }
                 // Bind UnitA
                 BindAnimatorTrackDirector(Director, Director.playableAsset, unitATrackName, unitA);
+                _unitA = unitA.gameObject;
             }
 
             // UnitB 
@@ -134,6 +143,7 @@ namespace develop_timeline
                 }
                 // Bind UnitB
                 BindAnimatorTrackDirector(Director, Director.playableAsset, unitBTrackName, unitB);
+                _unitB = unitB.gameObject;
             }
 
             // Cinemachine
@@ -145,6 +155,23 @@ namespace develop_timeline
             Director.Play();
             //DebugPlayable.Instance.ChangeSpeed(1, 0.05f);
         }
+
+        public void OnPlayFinish()
+        {
+            if (_unitA != null)
+            {
+                _unitA.transform.parent = null;
+                if (IsFinishSetParameterA)
+                    Debug.Log("UnitAni Finish Parameter");
+
+            }
+            if (_unitB != null)
+            {
+                _unitB.transform.parent = null;
+
+            }
+        }
+
         /// <summary>
         /// TrackBind
         /// </summary>
@@ -160,6 +187,7 @@ namespace develop_timeline
             var binding = director.playableAsset.outputs.First(c => c.streamName == trackName);
             director.SetGenericBinding(binding.sourceObject, animator);
         }
+
 
     }
 }

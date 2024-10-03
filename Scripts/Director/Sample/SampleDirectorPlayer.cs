@@ -16,6 +16,7 @@ namespace develop_timeline
             // Debug
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
+                // 実行中かチェック
                 GameObject director = Instantiate(PlayablePrefab.gameObject, transform.position, Quaternion.identity);
                 if (director.TryGetComponent<DirectorPlayer>(out var directorPlayer))
                     directorPlayer.OnSetPlayDirector(unitA: UnitA, unitB: UnitB);
