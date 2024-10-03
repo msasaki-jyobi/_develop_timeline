@@ -11,6 +11,8 @@ namespace develop_timeline
     [System.Serializable]
     public class GamePlayableAsset : PlayableAsset
     {
+        public List<StringEventHandle> StringEvent = new List<StringEventHandle>();
+
         // タイムライン中に実行したい内容を変数として登録
         [Header("音声の再生")]
         public List<ClipData> SEClip;

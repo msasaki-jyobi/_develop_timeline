@@ -12,6 +12,7 @@ namespace develop_timeline
         public PlayableDirector PlayingDirector;
 
         public event Action<string, string> StartEvent;
+        public event Action<string, string> UpdatePlayableEvent;
         public event Action<string, string> FinishEvent;
 
         public bool IsCheckPlaying()
@@ -61,11 +62,17 @@ namespace develop_timeline
 
         public void OnCollStartEvent(string eventName, string value)
         {
-            StartEvent(eventName, value);
+            StartEvent?.Invoke(eventName, value);
         }
         public void OnCollFinishEvent(string eventName, string value)
         {
-            FinishEvent(eventName, value);
+            FinishEvent?.Invoke(eventName, value);
+        }
+
+        public void UpdatePlayableEventInvoke(string eventName, string value)
+        {
+            UpdatePlayableEvent?.Invoke(eventName, value);
+            Debug.Log($"Update!! name:{eventName}, value:{value}");
         }
     }
 }
