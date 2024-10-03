@@ -11,6 +11,13 @@ namespace develop_timeline
         public Animator UnitA;
         public Animator UnitB;
 
+        private void Start()
+        {
+            DirectorManager.Instance.StartEvent += StartEventHandle;
+            DirectorManager.Instance.FinishEvent += FinishEventHandle;
+        }
+
+
         private void Update()
         {
             // Debug
@@ -23,7 +30,15 @@ namespace develop_timeline
 
                 // îjä¸Ç«Ç∑ÇÈÅH
             }
+        }
 
+        private void StartEventHandle(string eventName, string eventValue)
+        {
+            Debug.Log($"EventName:{eventName}, EventValue:{eventValue}");
+        }
+        private void FinishEventHandle(string eventName, string eventValue)
+        {
+            Debug.Log($"EventName:{eventName}, EventValue:{eventValue}");
         }
     }
 

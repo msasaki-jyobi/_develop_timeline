@@ -1,6 +1,7 @@
 using Cinemachine;
 using develop_body;
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,14 +15,14 @@ using UnityEngine.Rendering.PostProcessing;
 //    Spine: 0. 0.2f, 0
 // DirectorPlayaerはどこを基準にするか選択する
 
-
 namespace develop_timeline
 {
     public class DirectorPlayer : SingletonMonoBehaviour<DirectorPlayer>
     {
         [Space(10)]
         public EBodyType OriginBodyType;
-        public bool IsFinishSetParameterA;
+        public List<StringEventHandle> StartEventHandles = new List<StringEventHandle>();
+        public List<StringEventHandle> FinishEventHandles = new List<StringEventHandle>();
         // 終了時に実行したいパラメーター
 
         [Space(10)]
@@ -43,6 +44,8 @@ namespace develop_timeline
         private CinemachineBrain _brain;
         private GameObject _unitA;
         private GameObject _unitB;
+
+
 
 
         void Update()
@@ -180,14 +183,10 @@ namespace develop_timeline
             if (_unitA != null)
             {
                 _unitA.transform.parent = null;
-                if (IsFinishSetParameterA)
-                    Debug.Log("UnitAni Finish Parameter");
-
             }
             if (_unitB != null)
             {
                 _unitB.transform.parent = null;
-
             }
         }
 

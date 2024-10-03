@@ -88,6 +88,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f5e4eec2b591854c8ff2c485f8dcd9f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  OriginBodyType: 0
+  StartEventHandles:
+  - EventName: Hello
+    EventValue: Unity!!
+  FinishEventHandles:
+  - EventName: Finish
+    EventValue: 01A02B
   Director: {fileID: 6278724954496859995}
   PositionA: {fileID: 4021868686530909226}
   PositionB: {fileID: 7920430680673227314}

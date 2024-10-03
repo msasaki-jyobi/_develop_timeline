@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,9 @@ namespace develop_timeline
     {
         [Header("åªç›çƒê∂Ç™çsÇÌÇÍÇƒÇ¢ÇÈPlayableDirector")]
         public PlayableDirector PlayingDirector;
+
+        public event Action<string, string> StartEvent;
+        public event Action<string, string> FinishEvent;
 
         public bool IsCheckPlaying()
         {
@@ -26,26 +30,42 @@ namespace develop_timeline
             }
 
             PlayingDirector = director;
+
+            //Event Play
+            if (PlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
+                foreach (var finishEvent in directorPlayer.FinishEventHandles)
+                    StartEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue);
+
             return isCheck;
         }
 
         public void FinishPlayable()
         {
-            if(PlayingDirector != null)
+            if (PlayingDirector != null)
             {
-                if(PlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
+                if (PlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
                 {
                     directorPlayer.OnPlayFinish();
                     Destroy(PlayingDirector.gameObject);
                     PlayingDirector = null;
+
+                    foreach (var finishEvent in directorPlayer.FinishEventHandles)
+                        FinishEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue);
                 }
             }
             else
             {
                 Debug.LogError("é¿çsíÜÇÃDirectorÇÕÇ†ÇËÇ‹ÇπÇÒ");
             }
+        }
 
-      
+        public void OnCollStartEvent(string eventName, string value)
+        {
+            StartEvent(eventName, value);
+        }
+        public void OnCollFinishEvent(string eventName, string value)
+        {
+            FinishEvent(eventName, value);
         }
     }
 }
