@@ -1,4 +1,5 @@
 using Cinemachine;
+using develop_body;
 using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,11 +9,18 @@ using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Rendering.PostProcessing;
 
+// PlayerにDirectorOffsetクラス（案）
+//    Head : 0, 0.1f, 0
+//    Spine: 0. 0.2f, 0
+// DirectorPlayaerはどこを基準にするか選択する
+
+
 namespace develop_timeline
 {
     public class DirectorPlayer : SingletonMonoBehaviour<DirectorPlayer>
     {
         [Space(10)]
+        public EBodyType OriginBodyType;
         public bool IsFinishSetParameterA;
         // 終了時に実行したいパラメーター
 
@@ -126,6 +134,10 @@ namespace develop_timeline
                     unitA.transform.parent = PositionA.transform;//親を設定
                     unitA.transform.localPosition = Vector3.zero; // 座標を親に合わせる
                     unitA.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
+
+                    // ローカル座標を調整する
+                    if(unitA.TryGetComponent<UnitDirectorOffset>(out var directorOffset))
+                        unitA.transform.localPosition = directorOffset.GetBodyOffset(OriginBodyType);
                 }
                 // Bind UnitA
                 BindAnimatorTrackDirector(Director, Director.playableAsset, unitATrackName, unitA);
@@ -140,6 +152,13 @@ namespace develop_timeline
                     unitB.transform.parent = PositionB.gameObject.transform;
                     unitB.transform.localPosition = Vector3.zero; // 座標を親に合わせる
                     unitB.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
+
+                    // ローカル座標を調整する
+                    if (unitB.TryGetComponent<UnitDirectorOffset>(out var directorOffset))
+                    {
+                        unitB.transform.localPosition = directorOffset.GetBodyOffset(OriginBodyType);
+                        Debug.Log(unitB.transform.localPosition);
+                    }
                 }
                 // Bind UnitB
                 BindAnimatorTrackDirector(Director, Director.playableAsset, unitBTrackName, unitB);
