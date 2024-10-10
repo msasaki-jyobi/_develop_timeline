@@ -66,8 +66,8 @@ namespace develop_timeline
             //    InstanceManager.Instance.UnitShape.SetShapeWard(shapeData);
 
             var message = gamePlayableAsset.Message;
-            //if (message != "")
-            //    TextManager.Instance.OnSetMessage(message);
+            if (message != "")
+                DirectorManager.Instance.OnSetTimelineMessage(message);
 
             // Managerの関数に文字列渡してイベントを呼ばせる
 

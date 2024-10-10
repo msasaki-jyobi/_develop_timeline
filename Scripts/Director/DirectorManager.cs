@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -8,12 +9,17 @@ namespace develop_timeline
 {
     public class DirectorManager : SingletonMonoBehaviour<DirectorManager>
     {
+        public TextMeshProUGUI TimelineTextGUI;
+
         [Header("åªç›çƒê∂Ç™çsÇÌÇÍÇƒÇ¢ÇÈPlayableDirector")]
         public PlayableDirector PlayingDirector;
 
         public event Action<string, string> StartEvent;
         public event Action<string, string> UpdatePlayableEvent;
         public event Action<string, string> FinishEvent;
+
+        public GameObject UnitA;
+        public GameObject UnitB;
 
         public bool IsCheckPlaying()
         {
@@ -40,15 +46,35 @@ namespace develop_timeline
             return isCheck;
         }
 
+        public void OnSetTimelineMessage(string message)
+        {
+            TimelineTextGUI.text = message;
+        }
+
         public void FinishPlayable()
         {
             if (PlayingDirector != null)
             {
                 if (PlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
                 {
+                    if(UnitA != null)
+                    {
+                        if (UnitA.TryGetComponent<Rigidbody>(out var rigidbody))
+                            rigidbody.isKinematic = false;
+                        UnitA.transform.parent = null;
+                        UnitA = null;
+                    }
+                    if (UnitB != null)
+                    {
+                        if (UnitB.TryGetComponent<Rigidbody>(out var rigidbody))
+                            rigidbody.isKinematic = false;
+                        UnitB.transform.parent = null;
+                        UnitB = null;
+                    }
                     directorPlayer.OnPlayFinish();
                     Destroy(PlayingDirector.gameObject);
                     PlayingDirector = null;
+                    TimelineTextGUI.text = "";
 
                     foreach (var finishEvent in directorPlayer.FinishEventHandles)
                         FinishEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue);

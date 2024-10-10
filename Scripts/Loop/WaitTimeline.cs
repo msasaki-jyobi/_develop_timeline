@@ -5,7 +5,6 @@ using UnityEngine;
 public class WaitTimeline : MonoBehaviour
 {
 	private bool _trigger;
-
 	public bool trigger {
 		get {
 			#if UNITY_EDITOR

@@ -29,6 +29,8 @@ namespace develop_timeline
         public PlayableDirector Director;
         public Animator PositionA;
         public Animator PositionB;
+        public bool IsKinematicA;
+        public bool IsKinematicB;
 
         [Space(10)]
         // 逆再生用
@@ -139,12 +141,17 @@ namespace develop_timeline
                     unitA.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
 
                     // ローカル座標を調整する
-                    if(unitA.TryGetComponent<UnitDirectorOffset>(out var directorOffset))
+                    if (unitA.TryGetComponent<UnitDirectorOffset>(out var directorOffset))
                         unitA.transform.localPosition = directorOffset.GetBodyOffset(OriginBodyType);
                 }
                 // Bind UnitA
                 BindAnimatorTrackDirector(Director, Director.playableAsset, unitATrackName, unitA);
                 _unitA = unitA.gameObject;
+                DirectorManager.Instance.UnitA = unitA.gameObject;
+
+                if (IsKinematicA)
+                    if (unitA.TryGetComponent<Rigidbody>(out var rigidBody))
+                        rigidBody.isKinematic = true;
             }
 
             // UnitB 
@@ -166,6 +173,11 @@ namespace develop_timeline
                 // Bind UnitB
                 BindAnimatorTrackDirector(Director, Director.playableAsset, unitBTrackName, unitB);
                 _unitB = unitB.gameObject;
+                DirectorManager.Instance.UnitB = unitB.gameObject;
+
+                if (IsKinematicB)
+                    if (unitB.TryGetComponent<Rigidbody>(out var rigidBody))
+                        rigidBody.isKinematic = true;
             }
 
             // Cinemachine

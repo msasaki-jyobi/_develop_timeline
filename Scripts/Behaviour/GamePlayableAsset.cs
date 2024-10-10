@@ -33,7 +33,7 @@ namespace develop_timeline
         public Vector3 SetOffsetPos;
         public Vector3 SetRotation;
 
-        [Header("TextManager")]
+        [Header("TextManager"), Multiline]
         public string Message;
 
         public override Playable CreatePlayable(PlayableGraph graph, GameObject go)
