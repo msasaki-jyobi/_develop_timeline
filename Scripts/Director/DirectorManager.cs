@@ -73,12 +73,14 @@ namespace develop_timeline
                     }
                     directorPlayer.OnPlayFinish();
                     Destroy(PlayingDirector.gameObject);
-                    PlayingDirector = null;
-                    TimelineTextGUI.text = "";
 
                     foreach (var finishEvent in directorPlayer.FinishEventHandles)
                         FinishEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue);
+
                 }
+                PlayingDirector = null;
+                TimelineTextGUI.text = "";
+                FinishEvent?.Invoke("", "");
             }
             else
             {
