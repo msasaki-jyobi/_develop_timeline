@@ -31,6 +31,8 @@ namespace develop_timeline
         public Animator PositionB;
         public bool IsKinematicA;
         public bool IsKinematicB;
+        public Animator InitUnitA;
+        public Animator InitUnitB;
 
         [Space(10)]
         // ãtçƒê∂óp
@@ -47,7 +49,10 @@ namespace develop_timeline
         private GameObject _unitA;
         private GameObject _unitB;
 
-
+        private void Start()
+        {
+            
+        }
 
 
         void Update()
@@ -68,8 +73,8 @@ namespace develop_timeline
             // Init Play
             if (Input.GetKeyDown(KeyCode.F))
             {
-                Director.time = 0.01f;
-                Director.Play();
+                Play();
+
             }
             // Back Play
             if (Input.GetKeyDown(KeyCode.A))
@@ -94,6 +99,11 @@ namespace develop_timeline
                         Director.playableGraph.GetRootPlayable(0).SetSpeed(0);
                     }
                 }
+        }
+
+        public void Play()
+        {
+            OnSetPlayDirector(unitA: InitUnitA, unitB: InitUnitB);
         }
 
         public void ChangePlaySpeed(float newSpeed, float duration)
@@ -122,7 +132,7 @@ namespace develop_timeline
 
             DirectorManager.Instance.SetPlayDirector(Director);
 
-            _brain = Camera.main.GetComponent<CinemachineBrain>();
+            _brain = DirectorManager.Instance.Brain;
 
             // Bind Pos
             if (PositionA != null)

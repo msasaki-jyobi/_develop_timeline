@@ -59,7 +59,11 @@ namespace develop_timeline
             var voiceID = gamePlayableAsset.PlayVoiceID;
             //if (voiceID != "")
             //    InstanceManager.Instance.PlayerVoice.PlayVoice(voiceID);
-
+            
+            var eventName = gamePlayableAsset.EventName;
+            var eventValue = gamePlayableAsset.EventValue;
+            if (eventName != "")
+                DirectorManager.Instance.UpdatePlayableEventInvoke(eventName, eventValue);
 
             var shapeData = gamePlayableAsset.SetShapeWordData;
             //if (shapeData != null)

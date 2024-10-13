@@ -14,7 +14,7 @@ namespace develop_timeline
         private void Start()
         {
             DirectorManager.Instance.StartEvent += StartEventHandle;
-            DirectorManager.Instance.FinishEvent += FinishEventHandle;
+            DirectorManager.Instance.FinishNamedEvent += FinishEventHandle;
         }
 
 

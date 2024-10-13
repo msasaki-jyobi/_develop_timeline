@@ -1,3 +1,6 @@
+using Cinemachine;
+using develop_common;
+using develop_easymovie;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,13 +13,16 @@ namespace develop_timeline
     public class DirectorManager : SingletonMonoBehaviour<DirectorManager>
     {
         public TextMeshProUGUI TimelineTextGUI;
+        public CinemachineBrain Brain;
+        public Animator Player;
 
         [Header("現在再生が行われているPlayableDirector")]
         public PlayableDirector PlayingDirector;
 
         public event Action<string, string> StartEvent;
         public event Action<string, string> UpdatePlayableEvent;
-        public event Action<string, string> FinishEvent;
+        public event Action<string, string> FinishNamedEvent;
+        public event Action FinishEvent;
 
         public GameObject UnitA;
         public GameObject UnitB;
@@ -38,17 +44,17 @@ namespace develop_timeline
 
             PlayingDirector = director;
 
-            //Event Play
+            // DirectorPlayerがアタッチされていれば
             if (PlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
                 foreach (var finishEvent in directorPlayer.FinishEventHandles)
-                    StartEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue);
+                    StartEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue); // Event Play
 
             return isCheck;
         }
 
         public void OnSetTimelineMessage(string message)
         {
-            TimelineTextGUI.text = message;
+            TextFadeController.Instance.UpdateMessageText(message);
         }
 
         public void FinishPlayable()
@@ -75,32 +81,35 @@ namespace develop_timeline
                     Destroy(PlayingDirector.gameObject);
 
                     foreach (var finishEvent in directorPlayer.FinishEventHandles)
-                        FinishEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue);
+                        FinishNamedEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue);
 
                 }
                 PlayingDirector = null;
                 TimelineTextGUI.text = "";
-                FinishEvent?.Invoke("", "");
+                FinishNamedEvent?.Invoke("", "");
+                FinishEvent?.Invoke();
             }
             else
             {
                 Debug.LogError("実行中のDirectorはありません");
             }
         }
-
-        public void OnCollStartEvent(string eventName, string value)
-        {
-            StartEvent?.Invoke(eventName, value);
-        }
-        public void OnCollFinishEvent(string eventName, string value)
-        {
-            FinishEvent?.Invoke(eventName, value);
-        }
-
+        /// <summary>
+        /// Playble:Update Event
+        /// </summary>
+        /// <param name="eventName"></param>
+        /// <param name="value"></param>
         public void UpdatePlayableEventInvoke(string eventName, string value)
         {
             UpdatePlayableEvent?.Invoke(eventName, value);
             Debug.Log($"Update!! name:{eventName}, value:{value}");
+        }
+
+        public void PlayEasyMovie(EasyMoviePlayer easyMoviePlayer)
+        {
+            easyMoviePlayer.SubmitDirectorPlayer.Play();
+            //easyMoviePlayer.SubmitDirectorPlayer.Play();
+            //SetPlayDirector(easyMoviePlayer.SubmitDirectorPlayer,Play);
         }
     }
 }
