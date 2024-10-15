@@ -105,11 +105,6 @@ namespace develop_timeline
             Debug.Log($"Update!! name:{eventName}, value:{value}");
         }
 
-        public void PlayEasyMovie(EasyMoviePlayer easyMoviePlayer)
-        {
-            easyMoviePlayer.SubmitDirectorPlayer.Play();
-            //easyMoviePlayer.SubmitDirectorPlayer.Play();
-            //SetPlayDirector(easyMoviePlayer.SubmitDirectorPlayer,Play);
-        }
+
     }
 }
