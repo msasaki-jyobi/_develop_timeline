@@ -15,8 +15,8 @@ namespace develop_timeline
 
         // タイムライン中に実行したい内容を変数として登録
         [Header("音声の再生")]
-        public List<ClipData> SEClip;
-        public List<ClipData> VoiceClip;
+        public List<develop_common.ClipData> SEClip;
+        public List<develop_common.ClipData> VoiceClip;
         public string PlayVoiceID;
 
         [Header("Player：Shape")]
