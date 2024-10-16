@@ -1150,7 +1150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 91e46b4776953d74eb85f5ad8e072e7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PlayablePrefab: {fileID: 4979257223372218219, guid: 3df460f0404f21842baf3f13a875c54d,
+  PlayablePrefab: {fileID: 67041944762654551, guid: ab41d589d0a643246be7e7892341be31,
     type: 3}
   UnitA: {fileID: 412794548}
   UnitB: {fileID: 1457291662}
@@ -4562,6 +4562,9 @@ MonoBehaviour:
   - {fileID: 627268619}
   - {fileID: 1099701971}
   - {fileID: 1589561212}
+  IsBodyDamage: 0
+  AnimatorStateController: {fileID: 0}
+  AdditiveDamageStateName: 
 --- !u!114 &412794541
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4628,7 +4631,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d419ec2372d8f94fa5b997995877a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputReader: {fileID: 11400000, guid: 2938829d6e1a3e74d87d827e31978bfc, type: 2}
+  _inputReader: {fileID: 0}
   _unitActionLoader: {fileID: 412794545}
   _actionDataC: {fileID: 867914962149053577, guid: fd6600b73ce9ac24d8355c977c2f0f02,
     type: 3}
@@ -4662,6 +4665,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Animator: {fileID: 412794548}
   _crossAnimationTimer: 0.2
+  _defaultAnimatorState: 
   AllStates: []
 --- !u!54 &412794547
 Rigidbody:
@@ -5162,8 +5166,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 522066315}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.073371574, y: 0.4155984, z: -0.03365586, w: -0.9059591}
-  m_LocalPosition: {x: 1.7969896, y: 1.4837618, z: -1.5337886}
+  m_LocalRotation: {x: -0.035821136, y: 0.86424184, z: -0.06216677, w: -0.49793404}
+  m_LocalPosition: {x: 0.6057513, y: 1.3110787, z: -3.015843}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5860,6 +5864,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Animator: {fileID: 680506950}
   _crossAnimationTimer: 0.2
+  _defaultAnimatorState: 
   AllStates: []
 --- !u!54 &680506947
 Rigidbody:
@@ -5914,7 +5919,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d419ec2372d8f94fa5b997995877a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputReader: {fileID: 11400000, guid: 2938829d6e1a3e74d87d827e31978bfc, type: 2}
+  _inputReader: {fileID: 0}
   _unitActionLoader: {fileID: 680506948}
   _actionDataC: {fileID: 867914962149053577, guid: fd6600b73ce9ac24d8355c977c2f0f02,
     type: 3}
@@ -5992,6 +5997,9 @@ MonoBehaviour:
   - {fileID: 888676797}
   - {fileID: 1190199094}
   - {fileID: 1295238234}
+  IsBodyDamage: 0
+  AnimatorStateController: {fileID: 0}
+  AdditiveDamageStateName: 
 --- !u!114 &680506954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10847,6 +10855,9 @@ MonoBehaviour:
   - {fileID: 28439342}
   - {fileID: 301836616}
   - {fileID: 2104371074}
+  IsBodyDamage: 0
+  AnimatorStateController: {fileID: 0}
+  AdditiveDamageStateName: 
 --- !u!114 &1457291654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10930,7 +10941,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d419ec2372d8f94fa5b997995877a5a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputReader: {fileID: 11400000, guid: 2938829d6e1a3e74d87d827e31978bfc, type: 2}
+  _inputReader: {fileID: 0}
   _unitActionLoader: {fileID: 1457291659}
   _actionDataC: {fileID: 867914962149053577, guid: fd6600b73ce9ac24d8355c977c2f0f02,
     type: 3}
@@ -10964,6 +10975,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Animator: {fileID: 1457291662}
   _crossAnimationTimer: 0.2
+  _defaultAnimatorState: 
   AllStates: []
 --- !u!54 &1457291661
 Rigidbody:
@@ -15702,7 +15714,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d36cfa8b1e8290448ca9132e2cdd770, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TimelineTextGUI: {fileID: 0}
+  Brain: {fileID: 0}
+  Player: {fileID: 0}
   PlayingDirector: {fileID: 0}
+  UnitA: {fileID: 0}
+  UnitB: {fileID: 0}
 --- !u!1 &2097990125
 GameObject:
   m_ObjectHideFlags: 0
