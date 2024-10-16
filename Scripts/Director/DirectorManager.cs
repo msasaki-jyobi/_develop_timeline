@@ -54,7 +54,10 @@ namespace develop_timeline
 
         public void OnSetTimelineMessage(string message)
         {
-            TextFadeController.Instance.UpdateMessageText(message);
+            if(TextFadeController.Instance != null)
+                TextFadeController.Instance.UpdateMessageText(message);
+            else
+                TimelineTextGUI.text = message;
         }
 
         public void FinishPlayable()
