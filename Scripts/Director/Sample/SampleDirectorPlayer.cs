@@ -17,6 +17,9 @@ namespace develop_timeline
         {
             DirectorManager.Instance.StartEvent += StartEventHandle;
             DirectorManager.Instance.FinishNamedEvent += FinishEventHandle;
+
+            if (UnitA == null)
+                UnitA = GameObject.Find("Player").GetComponent<Animator>();
         }
 
 
