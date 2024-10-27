@@ -20,14 +20,14 @@ namespace develop_timeline
         public string PlayVoiceID;
 
         [Header("Player：Shape")]
-        public ShapeWordData SetShapeWordData;
+        public develop_common.ShapeWordData SetShapeWordData;
 
         [Header("実行するイベント名")]
         public string EventName = "";
         public string EventValue = "";
 
         [Header("InstanceManager：IDを指定してオブジェクト生成")]
-        public string PositionInstanceID;
+        public string InstanceKeyName;
         public GameObject Prefab;
         public bool IsParent;
         public Vector3 SetOffsetPos;

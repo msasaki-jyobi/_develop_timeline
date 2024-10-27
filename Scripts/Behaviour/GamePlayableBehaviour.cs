@@ -1,3 +1,4 @@
+using Common;
 using develop_common;
 using System;
 using System.Collections;
@@ -65,9 +66,9 @@ namespace develop_timeline
             if (eventName != "")
                 DirectorManager.Instance.UpdatePlayableEventInvoke(eventName, eventValue);
 
-            var shapeData = gamePlayableAsset.SetShapeWordData;
-            //if (shapeData != null)
-            //    InstanceManager.Instance.UnitShape.SetShapeWard(shapeData);
+            develop_common.ShapeWordData shapeData = gamePlayableAsset.SetShapeWordData;
+            if (shapeData != null)
+                InstanceManager.Instance.UnitShape.SetShapeWard(shapeData);
 
             var message = gamePlayableAsset.Message;
             if (message != "")
@@ -77,32 +78,10 @@ namespace develop_timeline
 
 
 
-            //var effects = gamePlayableAsset.BodyEffects;
-            //if(effects != null)
-            //    if(effects.Count != 0)
-            //        for (int i = 0; i < effects.Count; i++)
-            //        {
-            //            // 演者を取得
-            //            var damagerA = TimelineManager.Instance.TargetMovieComponent.AnimatorA;
-            //            var attackerB = TimelineManager.Instance.TargetMovieComponent.AnimatorB;
-            //            var WeponC = TimelineManager.Instance.TargetMovieComponent.AnimatorC;
-            //            // 対象を確定
-            //            Bodys targetBody = null;
-            //            switch(effects[i].Character)
-            //            {
-            //                case ECharacter.AnimatorA:
-            //                    targetBody = damagerA.GetComponent<Bodys>();
-            //                    break;
-            //                case ECharacter.AnimatorB:
-            //                    targetBody = attackerB.GetComponent<Bodys>();
-            //                    break;
-            //                case ECharacter.AnimatorC:
-            //                    targetBody = WeponC.GetComponent<Bodys>();
-            //                    break;
-            //            }
-            //            // 生成を頼む
-            //            targetBody.CreateBodyEffect(effects[i]);
-            //        }
+            var effect = gamePlayableAsset.Prefab;
+            if (effect != null)
+               InstanceManager.Instance.CreateObject(gamePlayableAsset.InstanceKeyName, effect, 0.5f);
+               
         }
 
         /// <summary>
