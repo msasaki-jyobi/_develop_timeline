@@ -54,9 +54,9 @@ namespace develop_timeline
 
         public void OnSetTimelineMessage(string message)
         {
-            if(TextFadeController.Instance != null)
+            if (TextFadeController.Instance != null)
                 TextFadeController.Instance.UpdateMessageText(message);
-            else
+            else if (TimelineTextGUI != null)
                 TimelineTextGUI.text = message;
         }
 
@@ -66,7 +66,7 @@ namespace develop_timeline
             {
                 if (PlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
                 {
-                    if(UnitA != null)
+                    if (UnitA != null)
                     {
                         if (UnitA.TryGetComponent<Rigidbody>(out var rigidbody))
                             rigidbody.isKinematic = false;

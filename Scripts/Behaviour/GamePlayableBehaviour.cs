@@ -76,8 +76,6 @@ namespace develop_timeline
 
             // Managerの関数に文字列渡してイベントを呼ばせる
 
-
-
             var effect = gamePlayableAsset.Prefab;
             if (effect != null)
                InstanceManager.Instance.CreateObject(gamePlayableAsset.InstanceKeyName, effect, 0.5f);
