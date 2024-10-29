@@ -1,4 +1,3 @@
-using Common;
 using develop_common;
 using System;
 using System.Collections;
@@ -68,7 +67,7 @@ namespace develop_timeline
 
             develop_common.ShapeWordData shapeData = gamePlayableAsset.SetShapeWordData;
             if (shapeData != null)
-                InstanceManager.Instance.UnitShape.SetShapeWard(shapeData);
+                DirectorManager.Instance.PlayerComponents.UnitShape.SetShapeWard(shapeData);
 
             var message = gamePlayableAsset.Message;
             if (message != "")
@@ -78,7 +77,7 @@ namespace develop_timeline
 
             var effect = gamePlayableAsset.Prefab;
             if (effect != null)
-               InstanceManager.Instance.CreateObject(gamePlayableAsset.InstanceKeyName, effect, 0.5f);
+                DirectorManager.Instance.PlayerComponents.UnitInstance.CreateObject(gamePlayableAsset.InstanceKeyName, effect, 0.5f);
                
         }
 

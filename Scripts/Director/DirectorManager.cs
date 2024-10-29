@@ -14,7 +14,7 @@ namespace develop_timeline
     {
         public TextMeshProUGUI TimelineTextGUI;
         public CinemachineBrain Brain;
-        public Animator Player;
+        public UnitComponents PlayerComponents;
 
         [Header("Œ»İÄ¶‚ªs‚í‚ê‚Ä‚¢‚éPlayableDirector")]
         public PlayableDirector PlayingDirector;
