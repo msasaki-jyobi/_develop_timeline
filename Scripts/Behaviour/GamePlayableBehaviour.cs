@@ -65,9 +65,14 @@ namespace develop_timeline
             if (eventName != "")
                 DirectorManager.Instance.UpdatePlayableEventInvoke(eventName, eventValue);
 
-            develop_common.ShapeWordData shapeData = gamePlayableAsset.SetShapeWordData;
-            if (shapeData != null)
-                DirectorManager.Instance.PlayerComponents.UnitShape.SetShapeWard(shapeData);
+            var timelineSetShape = gamePlayableAsset.TimelineSetShape;
+            if (timelineSetShape.Count > 0)
+                foreach(var setShape in  timelineSetShape)
+                {
+                    var unit = GameObject.Find(setShape.ShapeUnitName);
+                    if(unit != null)
+                        unit.GetComponent<UnitShape>().SetShapeWard(setShape.SetShapeWordData);
+                }
 
             var message = gamePlayableAsset.Message;
             if (message != "")

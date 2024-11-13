@@ -19,8 +19,8 @@ namespace develop_timeline
         public List<develop_common.ClipData> VoiceClip;
         public string PlayVoiceID;
 
-        [Header("Player：Shape")]
-        public develop_common.ShapeWordData SetShapeWordData;
+        [Header("Shape")]
+        public List<TimelineSetShape> TimelineSetShape = new List<TimelineSetShape>();
 
         [Header("実行するイベント名")]
         public string EventName = "";
@@ -52,4 +52,11 @@ namespace develop_timeline
             return playable;
         }
     }
+}
+
+[System.Serializable]
+public class TimelineSetShape
+{
+    public string ShapeUnitName;
+    public develop_common.ShapeWordData SetShapeWordData;
 }
