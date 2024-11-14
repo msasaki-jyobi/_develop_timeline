@@ -78,6 +78,14 @@ namespace develop_timeline
             if (message != "")
                 DirectorManager.Instance.OnSetTimelineMessage(message);
 
+            var loadSceneName = gamePlayableAsset.FadeLoadSceneName;
+            if(loadSceneName != "")
+            {
+                var fadeController = FadeController.Instance;
+                if (fadeController != null)
+                    fadeController.LoadSceneFadeout(loadSceneName);
+            }    
+
             // Managerの関数に文字列渡してイベントを呼ばせる
 
             var effect = gamePlayableAsset.Prefab;
