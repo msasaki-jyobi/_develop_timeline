@@ -83,7 +83,7 @@ namespace develop_timeline
             {
                 var fadeController = FadeController.Instance;
                 if (fadeController != null)
-                    fadeController.LoadSceneFadeout(loadSceneName);
+                    fadeController.LoadSceneFadeIn(loadSceneName);
             }    
 
             // Managerの関数に文字列渡してイベントを呼ばせる
