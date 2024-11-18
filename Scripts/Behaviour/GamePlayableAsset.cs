@@ -36,7 +36,7 @@ namespace develop_timeline
         [Header("TextManager"), Multiline]
         public string Message;
         [Header("FadeLoadScene")]
-        public string FadeLoadSceneName;
+        public string FadeLoadSceneName = "";
 
         public override Playable CreatePlayable(PlayableGraph graph, GameObject go)
         {
