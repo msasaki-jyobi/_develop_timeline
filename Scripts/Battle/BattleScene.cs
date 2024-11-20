@@ -17,6 +17,11 @@ namespace develop_battle
         public bool IsCheckCommandNum;
         public int CommandNum = 0; // CommandNum
 
+        [Header("ディレイ")]
+        public bool IsDelay;
+        public float DelayTime;
+        public float SetTimeScale = 0;
+
         [Header("モーション")]
         public bool IsPlayerChangeState;
         public string ChangePlayerStateName;
@@ -36,6 +41,7 @@ namespace develop_battle
         public GameObject TargetEnemyTransform;
 
         [Header("切り替えるカメラ")]
+        public float BrandTime = -1;
         public CinemachineVirtualCamera ChangeVcam;
         public List<CinemachineVirtualCamera> ChangeRandomVcams = new List<CinemachineVirtualCamera>();
     }
