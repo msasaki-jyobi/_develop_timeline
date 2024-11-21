@@ -1,4 +1,5 @@
 ﻿using Cinemachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,10 @@ namespace develop_battle
     {
 
         [Header("条件")]
+        public bool IsCheckPlayerWin;
         public bool PlayerWin; // WinPlayerCommand
+        public bool IsCheckDamagerWin;
+        public bool DamagerWin;
         public bool IsCheckOldgameState;
         public EGameState OldGameState; // 変更される前のGameState
         public bool IsCheckSelectGameState;
@@ -17,28 +21,36 @@ namespace develop_battle
         public bool IsCheckCommandNum;
         public int CommandNum = 0; // CommandNum
 
+        [Header("切り替えるステート")]
+        public bool IsSetGameState;
+        public EGameState SetGameState = EGameState.Battle;
+
         [Header("ディレイ")]
         public bool IsDelay;
         public float DelayTime;
         public float SetTimeScale = 0;
 
+        [Header("ループを行うタイム")]
+        public float LoopTime = 3f;
+        [Header("BattleSceneData；どの秒数で何を生成？初回なら？どこにダメージ発生させる？")]
+        public List<BattleActionData> EnemyDatas = new List<BattleActionData>();
+
         [Header("モーション")]
-        public bool IsPlayerChangeState;
-        public string ChangePlayerStateName;
-        public bool IsPlayerApplyChange;
+        public bool IsDamagerChangeState;
+        public string ChangeDamagerStateName;
+        public bool IsDamagerApplyChange;
         [Space(10)]
-        public bool IsEnemyChangeState;
-        public string ChangeEnemyStateName;
-        public bool IsEnemyApplyChange;
+        public bool IsAttakerChangeState;
+        public GameObject AttakerAction;
 
         [Header("座標")]
-        public bool IsPlayerPos;
-        public bool IsPlayerRot;
-        public GameObject TargetPlayerTransform;
+        public bool IsDamagerPos;
+        public bool IsDamagerRot;
+        public GameObject TargetDamagerTransform;
         [Space(10)]
-        public bool IsEnemyPos;
-        public bool IsEnemyRot;
-        public GameObject TargetEnemyTransform;
+        public bool IsAttackerPos;
+        public bool IsAttackerRot;
+        public GameObject TargetAttakerTransform;
 
         [Header("切り替えるカメラ")]
         public float BrandTime = -1;
