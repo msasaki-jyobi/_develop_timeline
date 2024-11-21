@@ -16,6 +16,9 @@ namespace develop_battle
         public float PlayTime;
 
         [Space(10)]
+        public bool IsFlexibleAnimator;
+        public FlexibleAnimator FlexibleAnimator;
+        [Space(10)]
         [Header("生成プレハブ")]
         public GameObject SummonPrefab;
         [Header("どこに向かわせ、固定するか？")]
@@ -50,6 +53,8 @@ namespace develop_battle
         public BattleActionData(BattleActionData battleEnemyData)
         {
             PlayTime = battleEnemyData.PlayTime;
+            IsFlexibleAnimator = battleEnemyData.IsFlexibleAnimator;
+            FlexibleAnimator = battleEnemyData.FlexibleAnimator;
             SummonPrefab = battleEnemyData.SummonPrefab;
             PrefabTargetBodyName = battleEnemyData.PrefabTargetBodyName;
             DamageBodyName = battleEnemyData.DamageBodyName;

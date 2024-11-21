@@ -294,6 +294,10 @@ namespace develop_battle
                             bAction.IsPlay = true;
                             bAction.IsInitPlay = true; // 現状機能しない
 
+                            // アニメーション
+                            if(bAction.IsFlexibleAnimator)
+                                bAction.FlexibleAnimator.Play();
+
                             // プレハブ生成 エフェクトじゃないから、手とかだから…//
                             // それか、単純にオブジェクト生成して、2秒かけて近づいて、2秒たったらモーション再生とか
                             // プレハブ側にやらせるパターン
