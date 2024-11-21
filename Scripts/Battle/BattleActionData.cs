@@ -1,6 +1,10 @@
-﻿using develop_common;
+﻿using Cinemachine;
+using develop_common;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+
+using developClipData = develop_common.ClipData;
 
 namespace develop_battle
 {
@@ -27,11 +31,16 @@ namespace develop_battle
         [Header("エフェクト")]
         public GameObject DamageEffectPrefab;
         [Header("SE")]
-        public ClipData DamageSE;
+        public developClipData DamageSE;
         [Header("Voice")]
         public string DamageVoice;
         [Header("セリフ")]
         public string DamageMessage;
+        [Header("切り替えるカメラ")]
+        public bool LookDamager;
+        public float BrandTime = -1;
+        public CinemachineVirtualCamera ChangeVcam;
+        public List<CinemachineVirtualCamera> ChangeRandomVcams = new List<CinemachineVirtualCamera>();
 
         [Space(10)]
         [Header("状態管理")]
@@ -50,6 +59,10 @@ namespace develop_battle
             DamageMessage = battleEnemyData.DamageMessage;
             IsInitPlay = battleEnemyData.IsInitPlay;
             IsPlay = battleEnemyData.IsPlay;
+            LookDamager = battleEnemyData.LookDamager;
+            BrandTime = battleEnemyData.BrandTime;
+            ChangeVcam = battleEnemyData.ChangeVcam;
+            ChangeRandomVcams = battleEnemyData.ChangeRandomVcams;
         }
     }
 }

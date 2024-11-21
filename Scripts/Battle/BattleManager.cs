@@ -3,11 +3,14 @@ using Cysharp.Threading.Tasks;
 using develop_battle;
 using develop_common;
 using develop_easymovie;
+using JetBrains.Annotations;
 using System.Collections.Generic;
 using TMPro;
 using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
+using developUnitComponents = develop_common.UnitComponents;
+
 
 namespace develop_battle
 {
@@ -32,8 +35,8 @@ namespace develop_battle
     public class BattleManager : MonoBehaviour
     {
         public TextMeshProUGUI MessageTextUGUI;
-        public UnitComponents PlayerUnitComponents;
-        public UnitComponents EnemyUnitComponents;
+        public developUnitComponents PlayerUnitComponents;
+        public developUnitComponents EnemyUnitComponents;
 
         public Slider PlayerHealthSlider;
         public Slider EnemyHealthSlider;
@@ -50,8 +53,8 @@ namespace develop_battle
 
         private bool _loadBattleEnemysData;
         private BattleScene ActiveBattleScene;
-        private UnitComponents AttakerUnitComponents;
-        private UnitComponents DamagerUnitComponents;
+        private developUnitComponents AttakerUnitComponents;
+        private developUnitComponents DamagerUnitComponents;
         private List<BattleActionData> BattleActionDatas = new List<BattleActionData>();
 
 
@@ -255,12 +258,13 @@ namespace develop_battle
                 AttakerUnitComponents.gameObject.transform.rotation = Quaternion.Euler(battleScene.TargetAttakerTransform.transform.rotation.eulerAngles);
 
             // カメラ切り替え
+            var lookTarget = battleScene.LookDamager ? DamagerUnitComponents.transform : null;
             if (battleScene.ChangeVcam != null)
-                develop_easymovie.CameraManager.Instance.ChangeActiveCamera(battleScene.ChangeVcam, battleScene.BrandTime, lookTarget:DamagerUnitComponents.transform);
+                develop_easymovie.CameraManager.Instance.ChangeActiveCamera(battleScene.ChangeVcam, battleScene.BrandTime, lookTarget: lookTarget);
             else if (battleScene.ChangeRandomVcams.Count > 0)
             {
                 int ran = UnityEngine.Random.Range(0, battleScene.ChangeRandomVcams.Count);
-                develop_easymovie.CameraManager.Instance.ChangeActiveCamera(battleScene.ChangeRandomVcams[ran], battleScene.BrandTime, lookTarget: DamagerUnitComponents.transform);
+                develop_easymovie.CameraManager.Instance.ChangeActiveCamera(battleScene.ChangeRandomVcams[ran], battleScene.BrandTime, lookTarget: lookTarget);
             }
         }
         /// <summary>
@@ -326,6 +330,17 @@ namespace develop_battle
                             }
                             // Additiveモーション 再生
                             DamagerUnitComponents.AnimatorStateController.AnimatorLayerPlay(1, "Additive1", 0);
+
+                            // カメラ切り替え
+                            var lookTarget = bAction.LookDamager ? DamagerUnitComponents.transform : null;
+                            if (bAction.ChangeVcam != null)
+                                develop_easymovie.CameraManager.Instance.ChangeActiveCamera(bAction.ChangeVcam, bAction.BrandTime, lookTarget: lookTarget);
+                            else if (bAction.ChangeRandomVcams.Count > 0)
+                            {
+                                int ran = UnityEngine.Random.Range(0, bAction.ChangeRandomVcams.Count);
+                                develop_easymovie.CameraManager.Instance.ChangeActiveCamera(bAction.ChangeRandomVcams[ran], bAction.BrandTime, lookTarget: lookTarget);
+                            }
+
                         }
                     }
 

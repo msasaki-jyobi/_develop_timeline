@@ -53,6 +53,7 @@ namespace develop_battle
         public GameObject TargetAttakerTransform;
 
         [Header("切り替えるカメラ")]
+        public bool LookDamager;
         public float BrandTime = -1;
         public CinemachineVirtualCamera ChangeVcam;
         public List<CinemachineVirtualCamera> ChangeRandomVcams = new List<CinemachineVirtualCamera>();
