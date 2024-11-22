@@ -31,50 +31,84 @@ namespace develop_battle
         Fire1,
         Fire2,
     }
-
     public class BattleManager : MonoBehaviour
     {
-        public TextMeshProUGUI MessageTextUGUI;
-        public developUnitComponents PlayerUnitComponents;
-        public developUnitComponents EnemyUnitComponents;
-
+        [Header("参照先")]
+        public TextMeshProUGUI MessageTextUGUI; // メッセージ用
+        public developUnitComponents PlayerUnitComponents; // Player
+        public developUnitComponents EnemyUnitComponents; // Enemy
         public Slider PlayerHealthSlider;
         public Slider EnemyHealthSlider;
-
+        public Slider TimeSlider;
+        // Health
         public ReactiveProperty<int> PlayerHealth = new ReactiveProperty<int>();
         public ReactiveProperty<int> EnemyHealth = new ReactiveProperty<int>();
-
-        public Slider TimeSlider;
+        // Timer
         public float DefaultSpanTime = 3f;
-        private float _spanTime;
 
-
+        // 読み込む戦闘シーン
         public List<BattleScene> BattleScenes = new List<BattleScene>();
 
-        private bool _loadBattleEnemysData;
-        private BattleScene ActiveBattleScene;
-        private developUnitComponents AttakerUnitComponents;
-        private developUnitComponents DamagerUnitComponents;
-        private List<BattleActionData> BattleActionDatas = new List<BattleActionData>();
+        private bool _loadBattleEnemysData; // バトルデータ読み込み官僚フラグ
+        private BattleScene ActiveBattleScene; // 現在再生中に戦闘シーン
+        private developUnitComponents AttakerUnitComponents; // 現在攻撃を行っているユニット
+        private developUnitComponents DamagerUnitComponents; // 現在攻撃を受けているユニット
+        private List<BattleActionData> BattleActionDatas = new List<BattleActionData>(); // 読み込むフレームデータ
 
-
-        public EKeyType SelectKey { get; private set; }
+        public EKeyType SelectKey { get; private set; } // 入力されたキー
         public int CommandNum { get; private set; } // 条件用：ランダムに選定、数値に応じた技
-        public EGameState OldGameState { get; private set; }
-        public ReactiveProperty<EGameState> GameState { get; private set; } = new ReactiveProperty<EGameState>();
+        public EGameState OldGameState { get; private set; } // 前回のステート
+        public ReactiveProperty<EGameState> GameState { get; private set; }
+            = new ReactiveProperty<EGameState>(); // 今回のステーt
 
+        private ReactiveProperty<float> _timer = new ReactiveProperty<float>(); // タイマー
+        private float _spanTime;
 
+        private bool _isPlayerInputKeyContains; // Player Key Match Flg
+        private bool _isDamagerKeyContains; // Damager Key Match
 
-        private ReactiveProperty<float> _timer = new ReactiveProperty<float>();
-        private bool _playerWin;
-        private bool _damagerWin;
+        [SerializeField] private bool IsDebugV; // Debug Test
+        private int _currentDebugIndex = -1;
 
         private void Start()
         {
+            // 初期化処理
+            ChangeState(EGameState.Init);
+            _timer.Value = 0;
             PlayerHealth.Value = 100;
             EnemyHealth.Value = 100;
             _spanTime = DefaultSpanTime;
 
+            // Playerの体力が変更
+            PlayerHealth
+                .Subscribe((x) =>
+                {
+                    PlayerHealthSlider.value = (float)PlayerHealth.Value / 100;
+                });
+
+            // 敵の体力が変更
+            EnemyHealth
+                .Subscribe((x) =>
+                {
+                    EnemyHealthSlider.value = (float)EnemyHealth.Value / 100;
+                });
+
+            // ステート変更に関する処理
+            //StateControl();
+        }
+
+        private void Update()
+        {
+            _timer.Value += Time.deltaTime;
+
+            BattleUpdate();
+
+            // キー操作に関する処理
+            KeyControl();
+        }
+
+        private void StateControl()
+        {
             // ステートを切り替えた時
             GameState
                 .Subscribe((x) =>
@@ -93,7 +127,7 @@ namespace develop_battle
                             int ran = UnityEngine.Random.Range(0, 4);
                             ran = 0;
                             // 同じキーを押せたか？
-                            _playerWin = SelectKey == (EKeyType)ran;
+                            _isPlayerInputKeyContains = SelectKey == (EKeyType)ran;
                             // バトルシーンを再生する
                             LoadCheckBattleScenes();
                             break;
@@ -127,7 +161,7 @@ namespace develop_battle
                         case EGameState.Check:
                             break;
                         case EGameState.Battle:
-                            BattleUpdate();
+                            //BattleUpdate();
                             //_timer.Value = 0;
                             //PlayerHealth.Value -= 5;
 
@@ -147,30 +181,10 @@ namespace develop_battle
                             break;
                     }
                 });
-
-            // Playerの体力が変更
-            PlayerHealth
-                .Subscribe((x) =>
-                {
-                    PlayerHealthSlider.value = (float)PlayerHealth.Value / 100;
-                });
-
-            // 敵の体力が変更
-            EnemyHealth
-                .Subscribe((x) =>
-                {
-                    EnemyHealthSlider.value = (float)EnemyHealth.Value / 100;
-                });
-
-            // 初期化処理
-            ChangeState(EGameState.Init);
-            _timer.Value = 0;
         }
 
-        private void Update()
+        private void KeyControl()
         {
-            _timer.Value += Time.deltaTime;
-
             if (Input.GetKeyDown(KeyCode.W))
                 SelectKey = EKeyType.Up;
             if (Input.GetKeyDown(KeyCode.A))
@@ -185,7 +199,18 @@ namespace develop_battle
                 ChangeState(EGameState.Init);
                 _timer.Value = 0;
             }
+
+            if (Input.GetKeyDown(KeyCode.V))
+                if (IsDebugV)
+                {
+                    _currentDebugIndex++;
+                    if (_currentDebugIndex == BattleScenes.Count)
+                        _currentDebugIndex = 0;
+
+                    LoadBattleScene(BattleScenes[_currentDebugIndex]);
+                }
         }
+
 
         /// <summary>
         /// ステートを変更する
@@ -207,9 +232,9 @@ namespace develop_battle
                 bool check = true;
 
                 if (sc.IsCheckPlayerWin)
-                    check = check && sc.PlayerWin == _playerWin; // 勝利状態の一致
-                if(sc.IsCheckDamagerWin)
-                    check = check && sc.DamagerWin == _damagerWin; // 勝利状態の一致
+                    check = check && sc.IsPlayerInputKeyContains == _isPlayerInputKeyContains; // 勝利状態の一致
+                if (sc.IsCheckDamagerWin)
+                    check = check && sc.IsDamgerKeyContains == _isDamagerKeyContains; // 勝利状態の一致
                 if (sc.IsCheckOldgameState)
                     check = check && sc.OldGameState == OldGameState; //前のステートの一致
                 if (sc.IsCheckSelectGameState)
@@ -219,17 +244,25 @@ namespace develop_battle
 
                 if (check)
                 {
-                    GameState.Value = sc.IsSetGameState ? sc.SetGameState : EGameState.Battle;
-                    PlayBattleScene(sc);
-
-                    Time.timeScale = sc.SetTimeScale;
-                    await UniTask.Delay((int)(sc.DelayTime * 1000), ignoreTimeScale: true);
-                    Time.timeScale = 1;
-                    _spanTime = sc.LoopTime;
+                    LoadBattleScene(sc);
                     return;
                 }
             }
         }
+
+        private async void LoadBattleScene(BattleScene battle)
+        {
+            // State Change
+            GameState.Value = battle.IsSetGameState ? battle.SetGameState : EGameState.Battle;
+            PlayBattleScene(battle);
+
+            // Delay
+            Time.timeScale = battle.SetTimeScale;
+            await UniTask.Delay((int)(battle.DelayTime * 1000), ignoreTimeScale: true);
+            Time.timeScale = 1;
+            _spanTime = battle.LoopTime;
+        }
+
         /// <summary>
         /// バトルシーンを再生する
         /// </summary>
@@ -237,8 +270,8 @@ namespace develop_battle
         private void PlayBattleScene(BattleScene battleScene)
         {
             ActiveBattleScene = battleScene;
-            AttakerUnitComponents = _playerWin ? PlayerUnitComponents : EnemyUnitComponents;
-            DamagerUnitComponents = _playerWin ? EnemyUnitComponents : PlayerUnitComponents;
+            AttakerUnitComponents = _isPlayerInputKeyContains ? PlayerUnitComponents : EnemyUnitComponents;
+            DamagerUnitComponents = _isPlayerInputKeyContains ? EnemyUnitComponents : PlayerUnitComponents;
 
             // モーション再生
             if (battleScene.IsDamagerChangeState)
@@ -295,23 +328,35 @@ namespace develop_battle
                             bAction.IsInitPlay = true; // 現状機能しない
 
                             // アニメーション
-                            if(bAction.IsFlexibleAnimator)
+                            if (bAction.IsFlexibleAnimator)
+                            {
+                                if (bAction.IsFlexibleSetTarget)
+                                {
+                                    var target = DamagerUnitComponents.UnitInstance.SearchObject(
+                                            bAction.FlexibleTargetBodyName
+                                        ).transform;
+                                    //bAction.FlexibleAnimator.Target = target;
+                                    bAction.FlexibleAnimator.Root.transform.parent = target;
+                                    bAction.FlexibleAnimator.Root.transform.localPosition = Vector3.zero;
+                                }
+
                                 bAction.FlexibleAnimator.Play();
+                            }
 
                             // プレハブ生成 エフェクトじゃないから、手とかだから…//
                             // それか、単純にオブジェクト生成して、2秒かけて近づいて、2秒たったらモーション再生とか
                             // プレハブ側にやらせるパターン
-                            GameObject enemyPrefab = null;
-                            if (bAction.SummonPrefab != null)
-                                enemyPrefab = Instantiate(bAction.SummonPrefab);
-                            if (enemyPrefab != null)
-                            {
-                                // 狙うBody設定
+                            //GameObject enemyPrefab = null;
+                            //if (bAction.SummonPrefab != null)
+                            //    enemyPrefab = Instantiate(bAction.SummonPrefab);
+                            //if (enemyPrefab != null)
+                            //{
+                            //    // 狙うBody設定
 
-                            }
+                            //}
 
                             // ダメージ発生 //
-                            if (!_playerWin)
+                            if (!_isPlayerInputKeyContains)
                                 PlayerHealth.Value -= bAction.DamageAmount;
                             else
                                 EnemyHealth.Value -= bAction.DamageAmount;
@@ -332,8 +377,12 @@ namespace develop_battle
                             {
                                 MessageTextUGUI.text = bAction.DamageMessage;
                             }
-                            // Additiveモーション 再生
-                            DamagerUnitComponents.AnimatorStateController.AnimatorLayerPlay(1, "Additive1", 0);
+                            if (bAction.IsAdditive)
+                            {
+                                // Additiveモーション 再生
+                                DamagerUnitComponents.AnimatorStateController.AnimatorLayerPlay(1, bAction.AdditiveStateName, 0);
+
+                            }
 
                             // カメラ切り替え
                             var lookTarget = bAction.LookDamager ? DamagerUnitComponents.transform : null;
@@ -355,7 +404,7 @@ namespace develop_battle
             if (_timer.Value > _spanTime) // バトルゲージマックス時
             {
                 // winチェック（脱出）
-                _damagerWin = 3 == (int)SelectKey;
+                _isDamagerKeyContains = 3 == (int)SelectKey;
 
                 _loadBattleEnemysData = false;
                 _timer.Value = 0;

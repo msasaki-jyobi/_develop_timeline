@@ -2,6 +2,7 @@
 using develop_common;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 using developClipData = develop_common.ClipData;
@@ -18,11 +19,13 @@ namespace develop_battle
         [Space(10)]
         public bool IsFlexibleAnimator;
         public FlexibleAnimator FlexibleAnimator;
-        [Space(10)]
-        [Header("生成プレハブ")]
-        public GameObject SummonPrefab;
-        [Header("どこに向かわせ、固定するか？")]
-        public string PrefabTargetBodyName = "";
+        public bool IsFlexibleSetTarget;
+        public string FlexibleTargetBodyName;
+        //[Space(10)]
+        //[Header("生成プレハブ")]
+        //public GameObject SummonPrefab;
+        //[Header("どこに向かわせ、固定するか？")]
+        //public string PrefabTargetBodyName = "";
 
         [Space(10)]
         [Header("ダメージ")]
@@ -45,6 +48,11 @@ namespace develop_battle
         public CinemachineVirtualCamera ChangeVcam;
         public List<CinemachineVirtualCamera> ChangeRandomVcams = new List<CinemachineVirtualCamera>();
 
+        [Header("Animation Additive")]
+        public bool IsAdditive;
+        public string AdditiveStateName;
+
+
         [Space(10)]
         [Header("状態管理")]
         public bool IsInitPlay; // 初回実行済みか
@@ -55,8 +63,10 @@ namespace develop_battle
             PlayTime = battleEnemyData.PlayTime;
             IsFlexibleAnimator = battleEnemyData.IsFlexibleAnimator;
             FlexibleAnimator = battleEnemyData.FlexibleAnimator;
-            SummonPrefab = battleEnemyData.SummonPrefab;
-            PrefabTargetBodyName = battleEnemyData.PrefabTargetBodyName;
+            IsFlexibleSetTarget = battleEnemyData.IsFlexibleSetTarget;
+            FlexibleTargetBodyName = battleEnemyData.FlexibleTargetBodyName;
+            //SummonPrefab = battleEnemyData.SummonPrefab;
+            //PrefabTargetBodyName = battleEnemyData.PrefabTargetBodyName;
             DamageBodyName = battleEnemyData.DamageBodyName;
             DamageEffectPrefab = battleEnemyData.DamageEffectPrefab;
             DamageSE = battleEnemyData.DamageSE;
@@ -68,6 +78,8 @@ namespace develop_battle
             BrandTime = battleEnemyData.BrandTime;
             ChangeVcam = battleEnemyData.ChangeVcam;
             ChangeRandomVcams = battleEnemyData.ChangeRandomVcams;
+            IsAdditive = battleEnemyData.IsAdditive;
+            AdditiveStateName = battleEnemyData.AdditiveStateName;
         }
     }
 }

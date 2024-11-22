@@ -11,9 +11,9 @@ namespace develop_battle
 
         [Header("条件")]
         public bool IsCheckPlayerWin;
-        public bool PlayerWin; // WinPlayerCommand
+        public bool IsPlayerInputKeyContains; // WinPlayerCommand
         public bool IsCheckDamagerWin;
-        public bool DamagerWin;
+        public bool IsDamgerKeyContains;
         public bool IsCheckOldgameState;
         public EGameState OldGameState; // 変更される前のGameState
         public bool IsCheckSelectGameState;
