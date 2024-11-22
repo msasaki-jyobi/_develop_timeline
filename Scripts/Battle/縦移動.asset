@@ -13,22 +13,29 @@ MonoBehaviour:
   m_Name: "\u7E26\u79FB\u52D5"
   m_EditorClassIdentifier: 
   AnimationSteps:
-  - LocalPosition: {x: 0, y: 0.1, z: 0}
+  - LocalPosition: {x: 0.1, y: 0, z: 0}
     LocalRotation: {x: 0, y: 0, z: 0}
     Duration: 1
     TransitionDuration: 0
     StateName: 
     StatePlayType: 0
     StateReset: 0
-  - LocalPosition: {x: 0, y: -0.1, z: 0}
+  - LocalPosition: {x: 0.4, y: 0, z: 0}
     LocalRotation: {x: 0, y: 0, z: 0}
     Duration: 1
     TransitionDuration: 0
     StateName: 
     StatePlayType: 0
     StateReset: 0
-  InitialPosition: {x: 0, y: 0, z: 1}
+  - LocalPosition: {x: 0, y: 0.4, z: 0}
+    LocalRotation: {x: 0, y: 0, z: 0}
+    Duration: 1
+    TransitionDuration: 0
+    StateName: 
+    StatePlayType: 0
+    StateReset: 0
+  InitialPosition: {x: 0, y: 0, z: 0}
   InitialRotation: {x: 0, y: 0, z: 0}
   ReturnDuration: 0.5
   ReturnTransitionDuration: 0.2
-  IsLooping: 0
+  IsLooping: 1
