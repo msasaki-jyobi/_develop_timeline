@@ -1,4 +1,5 @@
 using Cinemachine;
+using Cysharp.Threading.Tasks;
 using develop_common;
 using develop_easymovie;
 using System;
@@ -17,7 +18,7 @@ namespace develop_timeline
         public develop_common.UnitComponents PlayerComponents;
 
         [Header("現在再生が行われているPlayableDirector")]
-        public PlayableDirector PlayingDirector;
+        public PlayableDirector ActivePlayingDirector;
 
         public event Action<string, string> StartEvent;
         public event Action<string, string> UpdatePlayableEvent;
@@ -29,23 +30,35 @@ namespace develop_timeline
 
         public bool IsCheckPlaying()
         {
-            return PlayingDirector != null;
+            return ActivePlayingDirector != null;
+        }
+
+        public async void NormalPlayDirector(PlayableDirector director)
+        {
+            if (ActivePlayingDirector != null)
+            {
+                ActivePlayingDirector.Pause();
+                ActivePlayingDirector.Stop();
+            }
+            await UniTask.Delay(1);
+            ActivePlayingDirector = director;
+            director.Play();
         }
 
         public bool SetPlayDirector(PlayableDirector director)
         {
             bool isCheck = true;
 
-            if (PlayingDirector != null)
+            if (ActivePlayingDirector != null)
             {
-                Debug.LogError($"既に${PlayingDirector.playableAsset} が実行中でした");
+                Debug.LogError($"既に${ActivePlayingDirector.playableAsset} が実行中でした");
                 isCheck = false;
             }
 
-            PlayingDirector = director;
+            ActivePlayingDirector = director;
 
             // DirectorPlayerがアタッチされていれば
-            if (PlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
+            if (ActivePlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
                 foreach (var finishEvent in directorPlayer.FinishEventHandles)
                     StartEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue); // Event Play
 
@@ -62,9 +75,10 @@ namespace develop_timeline
 
         public void FinishPlayable()
         {
-            if (PlayingDirector != null)
+            return;
+            if (ActivePlayingDirector != null)
             {
-                if (PlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
+                if (ActivePlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
                 {
                     if (UnitA != null)
                     {
@@ -81,13 +95,13 @@ namespace develop_timeline
                         UnitB = null;
                     }
                     directorPlayer.OnPlayFinish();
-                    Destroy(PlayingDirector.gameObject);
+                    Destroy(ActivePlayingDirector.gameObject);
 
                     foreach (var finishEvent in directorPlayer.FinishEventHandles)
                         FinishNamedEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue);
 
                 }
-                PlayingDirector = null;
+                ActivePlayingDirector = null;
                 TimelineTextGUI.text = "";
                 FinishNamedEvent?.Invoke("", "");
                 FinishEvent?.Invoke();

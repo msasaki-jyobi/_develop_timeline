@@ -100,11 +100,11 @@ namespace develop_timeline
         private void LineGameUpdate()
         {
             // Stringイベントを実行する
-            if (gamePlayableAsset.StringEvent != null)
-            {
-                foreach(var ev in gamePlayableAsset.StringEvent)
-                    DirectorManager.Instance.UpdatePlayableEventInvoke(ev.EventName, ev.EventValue);
-            }
+            //if (gamePlayableAsset.StringEvent != null)
+            //{
+            //    foreach(var ev in gamePlayableAsset.StringEvent)
+            //        DirectorManager.Instance.UpdatePlayableEventInvoke(ev.EventName, ev.EventValue);
+            //}
 
             //var posID = gamePlayableAsset.PositionInstanceID;
             //var prefab = gamePlayableAsset.Prefab;
