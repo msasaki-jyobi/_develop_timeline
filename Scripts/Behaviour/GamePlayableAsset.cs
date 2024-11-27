@@ -17,6 +17,7 @@ namespace develop_timeline
         [Header("音声の再生")]
         public List<develop_common.ClipData> SEClip;
         public List<develop_common.ClipData> VoiceClip;
+        public ActionBase PlayAction;
         public string PlayVoiceID;
 
         [Header("Shape")]
