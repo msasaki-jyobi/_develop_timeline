@@ -1,5 +1,6 @@
 using Cinemachine;
 using develop_common;
+using develop_timeline;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,25 +8,37 @@ using UnityEngine.Playables;
 
 namespace develop_timeline
 {
+    public enum EPlayableParamater
+    {
+        None,
+        PlayDirector,
+        AnimatorStateMotion,
+        AdditiveMotion,
+        Shape,
+        CameraChange,
+        Damage,
+        Dead,
+        ChangeInstanceShape,
+        ChangeInstanceObject,
+        AddShape,
+        ThirdPlayDirector,
+        SelectWaveTalk,
+    }
 
     [System.Serializable]
     public class GamePlayableAsset : PlayableAsset
     {
-        public List<StringEventHandle> StringEvent = new List<StringEventHandle>();
-
         // タイムライン中に実行したい内容を変数として登録
         [Header("音声の再生")]
         public List<develop_common.ClipData> SEClip;
         public List<develop_common.ClipData> VoiceClip;
-        public ActionBase PlayAction;
         public string PlayVoiceID;
 
         [Header("Shape")]
         public List<TimelineSetShape> TimelineSetShape = new List<TimelineSetShape>();
 
-        [Header("実行するイベント名")]
-        public string EventName = "";
-        public string EventValue = "";
+        [Header("実行するイベント")]
+        public List<TimelineSetEvent> TimelineSetEvents = new List<TimelineSetEvent>();
 
         [Header("InstanceManager：IDを指定してオブジェクト生成")]
         public string InstanceKeyName;
@@ -62,4 +75,10 @@ public class TimelineSetShape
 {
     public string ShapeUnitName;
     public develop_common.ShapeWordData SetShapeWordData;
+}
+[System.Serializable]
+public class TimelineSetEvent
+{
+    public EPlayableParamater EventName;
+    public string EventValue = "";
 }

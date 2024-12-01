@@ -60,10 +60,13 @@ namespace develop_timeline
             //if (voiceID != "")
             //    InstanceManager.Instance.PlayerVoice.PlayVoice(voiceID);
             
-            var eventName = gamePlayableAsset.EventName;
-            var eventValue = gamePlayableAsset.EventValue;
-            if (eventName != "")
-                DirectorManager.Instance.UpdatePlayableEventInvoke(eventName, eventValue);
+            foreach (var ev in gamePlayableAsset.TimelineSetEvents)
+            {
+                var eventName = ev.EventName;
+                var eventValue = ev.EventValue;
+                if (eventName != EPlayableParamater.None)
+                    DirectorManager.Instance.UpdatePlayableEventInvoke(eventName, eventValue);
+            }
 
             var timelineSetShape = gamePlayableAsset.TimelineSetShape;
             if (timelineSetShape.Count > 0)

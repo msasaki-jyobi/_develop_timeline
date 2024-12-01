@@ -21,12 +21,14 @@ namespace develop_timeline
         public PlayableDirector ActivePlayingDirector;
 
         public event Action<string, string> StartEvent;
-        public event Action<string, string> UpdatePlayableEvent;
+        public event Action<EPlayableParamater, string> UpdatePlayableEvent;
         public event Action<string, string> FinishNamedEvent;
         public event Action FinishEvent;
 
         public GameObject UnitA;
         public GameObject UnitB;
+
+        public int ThirdCount;
 
         public bool IsCheckPlaying()
         {
@@ -35,6 +37,7 @@ namespace develop_timeline
 
         public async void NormalPlayDirector(PlayableDirector director)
         {
+            ThirdCount = 0;
             if (ActivePlayingDirector != null)
             {
                 ActivePlayingDirector.Pause();
@@ -116,7 +119,7 @@ namespace develop_timeline
         /// </summary>
         /// <param name="eventName"></param>
         /// <param name="value"></param>
-        public void UpdatePlayableEventInvoke(string eventName, string value)
+        public void UpdatePlayableEventInvoke(EPlayableParamater eventName, string value)
         {
             UpdatePlayableEvent?.Invoke(eventName, value);
             Debug.Log($"Update!! name:{eventName}, value:{value}");
