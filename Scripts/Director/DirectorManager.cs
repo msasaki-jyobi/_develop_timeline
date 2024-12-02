@@ -30,6 +30,10 @@ namespace develop_timeline
 
         public int ThirdCount;
 
+        [Header("FadeControllerを利用したNormalPlay用")]
+        public float NormalFadeTime = 0.5f;
+        public Color NormalPlayFadeColor;
+
         public bool IsCheckPlaying()
         {
             return ActivePlayingDirector != null;
@@ -37,15 +41,24 @@ namespace develop_timeline
 
         public async void NormalPlayDirector(PlayableDirector director)
         {
-            ThirdCount = 0;
-            if (ActivePlayingDirector != null)
+            ThirdCount = 0; // 3回カウンターリセット
+            if (ActivePlayingDirector != null) // 現在再生中のは停止
             {
                 ActivePlayingDirector.Pause();
                 ActivePlayingDirector.Stop();
             }
             await UniTask.Delay(1);
+
+            // 再生を実行
             ActivePlayingDirector = director;
-            director.Play();
+
+            if (NormalFadeTime <= 0)
+                director.Play();
+            else
+                FadeController.Instance.ActionPlayFadeIn(() =>
+                {
+                    director.Play();
+                }, NormalFadeTime, NormalFadeTime, NormalPlayFadeColor);
         }
 
         public bool SetPlayDirector(PlayableDirector director)

@@ -23,6 +23,8 @@ namespace develop_timeline
         AddShape,
         ThirdPlayDirector,
         SelectWaveTalk,
+        SecondDamage, // ThirdPlayDirectorが2の時だけダメージ判定
+        AddScore,
     }
 
     [System.Serializable]
