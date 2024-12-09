@@ -13,23 +13,33 @@ using UnityEngine.UIElements;
 
 namespace develop_timeline
 {
-    public enum EDirectorType
-    {
-        Normal, // 通常実行
-        PlayPosReset, // 終了後に実行前の座標に戻る
-    }
-
-
     public class DirectorManager : SingletonMonoBehaviour<DirectorManager>
     {
+
+
         public TextMeshProUGUI TimelineTextGUI;
         public CinemachineBrain Brain;
 
+        public bool IsFinishResetPos; // 再生時 各オブジェクトの座標を記録して 終了時にPositionAから外して元に戻す
+        private Vector3 _unitAPlayPosition;
+        private Vector3 _unitBPlayPosition;
+        public bool IsPlayPositionParent; // 再生時に指定されたPositionの子オブジェクトにして、終了時に元に戻す
+
+        [Header("＝＝＝＝＝＝")]
+        [Header("プレハブを生成し、Bに自動割り当て")]
+        public bool IsCreatePrefab;
         public GameObject UnitAPrefab;
         public GameObject UnitBPrefab;
-        public GameObject Positions;
+        [Header("B：自動割り当てしない場合は、手動でアタッチ")]
         private Animator _unitA;
         private Animator _unitB;
+        public develop_common.UnitComponents UnitAComponents;
+        public develop_common.UnitComponents UnitBComponents;
+
+
+        [Header("＝＝＝＝＝＝")]
+        [Header("事前にアタッチ、")]
+        public GameObject Positions;
         public Animator PositionA;
         public Animator PositionB;
 
@@ -42,34 +52,39 @@ namespace develop_timeline
         public event Action FinishEvent;
 
         public int ThirdCount; // ３回ループ用
-        public develop_common.UnitComponents UnitAComponents;
-        public develop_common.UnitComponents UnitBComponents;
+
 
         [Header("FadeControllerを利用したNormalPlay用")]
         public float NormalFadeTime = 0.5f;
         public Color NormalPlayFadeColor;
 
-      
+
 
         private async void Start()
         {
-            var unitA = Instantiate(UnitAPrefab);
-            var unitB = Instantiate(UnitBPrefab);
-            unitA.gameObject.name = UnitAPrefab.name;
-            unitB.gameObject.name = UnitBPrefab.name;
+            if (IsCreatePrefab)
+            {
+                var unitA = Instantiate(UnitAPrefab);
+                var unitB = Instantiate(UnitBPrefab);
+                unitA.gameObject.name = UnitAPrefab.name;
+                unitB.gameObject.name = UnitBPrefab.name;
 
-            await UniTask.WaitUntil(() => unitA != null);
-            await UniTask.WaitUntil(() => unitB != null);
+                await UniTask.WaitUntil(() => unitA != null);
+                await UniTask.WaitUntil(() => unitB != null);
+                ChangeUnitA(unitA.GetComponent<develop_common.UnitComponents>().Animator); // UnitComponentsにプレハブをアタッチ
+                ChangeUnitB(unitB.GetComponent<develop_common.UnitComponents>().Animator); // UnitComponentsにプレハブをアタッチ
+            }
 
-            ChangeUnitA(unitA.GetComponent<develop_common.UnitComponents>().Animator);
-            ChangeUnitB(unitB.GetComponent<develop_common.UnitComponents>().Animator);
         }
 
         public bool IsCheckPlaying()
         {
             return ActivePlayingDirector != null;
         }
-
+        /// <summary>
+        /// 設定されているUnitA,UnitBを元にモーションを実行
+        /// </summary>
+        /// <param name="director"></param>
         public async void NormalPlayDirector(PlayableDirector director)
         {
             ThirdCount = 0; // 3回カウンターリセット
@@ -80,22 +95,12 @@ namespace develop_timeline
             }
             await UniTask.Delay(1);
 
-            // UnitAとPosition差し替えやっぱ必須だ！
-            // UnitAとPosition差し替えやっぱ必須だ！
-            // UnitAとPosition差し替えやっぱ必須だ！
-            // UnitAとPosition差し替えやっぱ必須だ！
-            // UnitAとPosition差し替えやっぱ必須だ！
-            // UnitAとPosition差し替えやっぱ必須だ！
-            // UnitA, BとPositionA, B差し替えやっぱ必須だ！
-
-
-
             // 再生を実行
             ActivePlayingDirector = director;
 
             if (NormalFadeTime <= 0)
                 SetDirectors(director, _unitA, _unitB, PositionA, PositionB, Brain, true);
-                //director.Play();
+            //director.Play();
             else
                 FadeController.Instance.ActionPlayFadeIn(() =>
                 {
@@ -251,7 +256,7 @@ namespace develop_timeline
             director.SetGenericBinding(brainTrack.sourceObject, brain);
 
             // DirectorPlay
-            if(isPlay)
+            if (isPlay)
             {
                 await UniTask.Delay(1);
                 director.time = 0.01f;
@@ -275,6 +280,11 @@ namespace develop_timeline
             var binding = director.playableAsset.outputs.First(c => c.streamName == trackName);
             director.SetGenericBinding(binding.sourceObject, animator);
         }
+
+        /// <summary>
+        /// ユニットAを書き換える
+        /// </summary>
+        /// <param name="unit"></param>
         public void ChangeUnitA(Animator unit)
         {
             _unitA = unit;
@@ -285,6 +295,9 @@ namespace develop_timeline
             _unitA.transform.localPosition = Vector3.zero; // 座標を親に合わせる
             _unitA.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
         }
+        /// <summary>
+        /// ユニットBを書き換える
+        /// </summary>
         public void ChangeUnitB(Animator unit)
         {
             _unitB = unit;
@@ -298,7 +311,7 @@ namespace develop_timeline
 
         public void SetPositionsParent(Transform parentObj)
         {
-            if(Positions.transform.parent != parentObj)
+            if (Positions.transform.parent != parentObj)
             {
                 Positions.transform.parent = parentObj;
                 Positions.transform.localPosition = Vector3.zero;
