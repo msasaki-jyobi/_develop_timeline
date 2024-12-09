@@ -57,8 +57,8 @@ namespace develop_timeline
                         AudioManager.Instance.PlayOneShotClipData(voiceClip[i]);
 
             var voiceID = gamePlayableAsset.PlayVoiceID;
-            //if (voiceID != "")
-            //    InstanceManager.Instance.PlayerVoice.PlayVoice(voiceID);
+            if (voiceID != "")
+                DirectorManager.Instance.UnitAComponents.UnitVoice.PlayVoice(voiceID);
             
             foreach (var ev in gamePlayableAsset.TimelineSetEvents)
             {

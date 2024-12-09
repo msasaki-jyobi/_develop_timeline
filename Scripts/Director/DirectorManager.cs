@@ -13,6 +13,13 @@ using UnityEngine.UIElements;
 
 namespace develop_timeline
 {
+    public enum EDirectorType
+    {
+        Normal, // 通常実行
+        PlayPosReset, // 終了後に実行前の座標に戻る
+    }
+
+
     public class DirectorManager : SingletonMonoBehaviour<DirectorManager>
     {
         public TextMeshProUGUI TimelineTextGUI;
