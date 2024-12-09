@@ -10,6 +10,11 @@ namespace develop_timeline
     {
         public List<OffsetParameter> OffsetParameters = new List<OffsetParameter>();
 
+        private void Start()
+        {
+    
+        }
+
         public Vector3 GetBodyOffset(EBodyType bodyType)
         {
             Vector3 offset = Vector3.zero;

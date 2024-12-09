@@ -25,6 +25,7 @@ namespace develop_timeline
         SelectWaveTalk,
         SecondDamage, // ThirdPlayDirectorが2の時だけダメージ判定
         AddScore,
+        SetTimeScale,
     }
 
     [System.Serializable]
@@ -36,11 +37,12 @@ namespace develop_timeline
         public List<develop_common.ClipData> VoiceClip;
         public string PlayVoiceID;
 
-        [Header("Shape")]
+        [Header("Shape FindやめてUnitAに。名前入力必要なし")]
         public List<TimelineSetShape> TimelineSetShape = new List<TimelineSetShape>();
 
         [Header("実行するイベント")]
         public List<TimelineSetEvent> TimelineSetEvents = new List<TimelineSetEvent>();
+        public List<TimelineSetEvent> TimelineSetUnitBEvents = new List<TimelineSetEvent>();
 
         [Header("InstanceManager：IDを指定してオブジェクト生成")]
         public string InstanceKeyName;

@@ -67,14 +67,25 @@ namespace develop_timeline
                 if (eventName != EPlayableParamater.None)
                     DirectorManager.Instance.UpdatePlayableEventInvoke(eventName, eventValue);
             }
+            foreach (var ev in gamePlayableAsset.TimelineSetUnitBEvents)
+            {
+                var eventName = ev.EventName;
+                var eventValue = ev.EventValue;
+                if (eventName != EPlayableParamater.None)
+                    DirectorManager.Instance.UpdatePlayableEventInvoke(eventName, eventValue, false);
+            }
 
             var timelineSetShape = gamePlayableAsset.TimelineSetShape;
             if (timelineSetShape.Count > 0)
                 foreach(var setShape in  timelineSetShape)
                 {
-                    var unit = GameObject.Find(setShape.ShapeUnitName);
-                    if(unit != null)
-                        unit.GetComponent<UnitShape>().SetShapeWard(setShape.SetShapeWordData);
+                    //var unit = GameObject.Find(setShape.ShapeUnitName);
+                    //if(unit != null)
+                    //    unit.GetComponent<UnitShape>().SetShapeWard(setShape.SetShapeWordData);
+                    if (DirectorManager.Instance.UnitAComponents != null)
+                        if (DirectorManager.Instance.UnitAComponents.UnitShape != null)
+                            DirectorManager.Instance.UnitAComponents.UnitShape.SetShapeWard(setShape.SetShapeWordData);
+
                 }
 
             var message = gamePlayableAsset.Message;
@@ -91,9 +102,9 @@ namespace develop_timeline
 
             // Managerの関数に文字列渡してイベントを呼ばせる
 
-            var effect = gamePlayableAsset.Prefab;
-            if (effect != null)
-                DirectorManager.Instance.PlayerComponents.UnitInstance.CreateObject(gamePlayableAsset.InstanceKeyName, effect, 0.5f);
+            //var effect = gamePlayableAsset.Prefab;
+            //if (effect != null)
+            //    DirectorManager.Instance.PlayerComponents.UnitInstance.CreateObject(gamePlayableAsset.InstanceKeyName, effect, 0.5f);
                
         }
 

@@ -158,7 +158,7 @@ namespace develop_timeline
                 // Bind UnitA
                 BindAnimatorTrackDirector(Director, Director.playableAsset, unitATrackName, unitA);
                 _unitA = unitA.gameObject;
-                DirectorManager.Instance.UnitA = unitA.gameObject;
+                //DirectorManager.Instance._unitA = unitA.gameObject;
 
                 if (IsKinematicA)
                     if (unitA.TryGetComponent<Rigidbody>(out var rigidBody))
@@ -184,7 +184,7 @@ namespace develop_timeline
                 // Bind UnitB
                 BindAnimatorTrackDirector(Director, Director.playableAsset, unitBTrackName, unitB);
                 _unitB = unitB.gameObject;
-                DirectorManager.Instance.UnitB = unitB.gameObject;
+                //DirectorManager.Instance._unitB = unitB.gameObject;
 
                 if (IsKinematicB)
                     if (unitB.TryGetComponent<Rigidbody>(out var rigidBody))
