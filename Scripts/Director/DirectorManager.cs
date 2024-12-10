@@ -20,19 +20,28 @@ namespace develop_timeline
         public TextMeshProUGUI TimelineTextGUI;
         public CinemachineBrain Brain;
 
+        [Header("再生時、Unitをprivate変数に上書き")]
+        public bool UnitOverwrite_UnitComponents;
+        [Header("再生時、Positionでラップする")]
+        public bool IsPlayPositionParent; // 再生時に指定されたPositionの子オブジェクトにして、終了時に元に戻す
+        [Header("再生終了時にPositionから解放し、元の位置に戻す")]
         public bool IsFinishResetPos; // 再生時 各オブジェクトの座標を記録して 終了時にPositionAから外して元に戻す
+        [Header("Positionsを再生する時にUnitBに同期する")]
+        public bool IsPlayPositionsUnitBSync;
+        public Transform DefaultPositionsParent;
         private Vector3 _unitAPlayPosition;
         private Vector3 _unitBPlayPosition;
-        public bool IsPlayPositionParent; // 再生時に指定されたPositionの子オブジェクトにして、終了時に元に戻す
+
 
         [Header("＝＝＝＝＝＝")]
-        [Header("プレハブを生成し、Bに自動割り当て")]
+        [Header("プレハブを生成し、A,Bに自動割り当て")]
         public bool IsCreatePrefab;
         public GameObject UnitAPrefab;
         public GameObject UnitBPrefab;
         [Header("B：自動割り当てしない場合は、手動でアタッチ")]
         private Animator _unitA;
         private Animator _unitB;
+        [Header("参照必須（自動生成ならからでOK）")]
         public develop_common.UnitComponents UnitAComponents;
         public develop_common.UnitComponents UnitBComponents;
 
@@ -74,7 +83,6 @@ namespace develop_timeline
                 ChangeUnitA(unitA.GetComponent<develop_common.UnitComponents>().Animator); // UnitComponentsにプレハブをアタッチ
                 ChangeUnitB(unitB.GetComponent<develop_common.UnitComponents>().Animator); // UnitComponentsにプレハブをアタッチ
             }
-
         }
 
         public bool IsCheckPlaying()
@@ -87,6 +95,22 @@ namespace develop_timeline
         /// <param name="director"></param>
         public async void NormalPlayDirector(PlayableDirector director)
         {
+            if (UnitOverwrite_UnitComponents)
+            {
+                _unitA = UnitAComponents.Animator;
+                _unitB = UnitBComponents.Animator;
+            }
+
+            if (IsPlayPositionsUnitBSync)
+            {
+                Positions.transform.position = _unitB.transform.position;
+            }
+
+            if (_unitA.TryGetComponent<Rigidbody>(out var rigid))
+                rigid.isKinematic = true;
+            if (_unitB.TryGetComponent<Rigidbody>(out var rigid2))
+                rigid2.isKinematic = true;
+
             ThirdCount = 0; // 3回カウンターリセット
             if (ActivePlayingDirector != null) // 現在再生中のは停止
             {
@@ -139,9 +163,9 @@ namespace develop_timeline
 
         public void FinishPlayable()
         {
-            return;
             if (ActivePlayingDirector != null)
             {
+                // 再生を実行したDirectorに「DirectorPlayer」が存在する場合
                 if (ActivePlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
                 {
                     if (_unitA != null)
@@ -165,6 +189,27 @@ namespace develop_timeline
                         FinishNamedEvent?.Invoke(finishEvent.EventName, finishEvent.EventValue);
 
                 }
+                if (IsFinishResetPos)
+                {
+                    _unitA.transform.parent = null;
+                    _unitA.transform.position = _unitAPlayPosition;
+                    _unitB.transform.parent = null;
+                    _unitB.transform.position = _unitBPlayPosition;
+                }
+
+                if (_unitA.TryGetComponent<Rigidbody>(out var rigid))
+                    rigid.isKinematic = false;
+
+                if (_unitB.TryGetComponent<Rigidbody>(out var rigid2))
+                    rigid2.isKinematic = false;
+
+                if (IsPlayPositionsUnitBSync)
+                {
+                    Positions.transform.localPosition = Vector3.zero;
+                }
+
+
+                // 終了処理
                 ActivePlayingDirector = null;
                 TimelineTextGUI.text = "";
                 FinishNamedEvent?.Invoke("", "");
@@ -193,6 +238,7 @@ namespace develop_timeline
             var posATrackName = "PosA";
             var posBTrackName = "PosB";
 
+
             // Bind Pos
             if (positionA != null)
                 BindAnimatorTrackDirector(director, director.playableAsset, posATrackName, positionA);
@@ -202,10 +248,15 @@ namespace develop_timeline
             // UnitA
             if (unitA != null)
             {
+                _unitAPlayPosition = unitA.transform.position;
+
+
+
                 if (positionA != null)
                 {
                     // offsetどうする？キャラ大きいとか小さいとか
-                    unitA.transform.parent = positionA.transform;//親を設定
+                    if (IsPlayPositionParent)
+                        unitA.transform.parent = positionA.transform;//親を設定
                     _unitA.transform.localPosition = Vector3.zero; // 座標を親に合わせる
                     unitA.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
 
@@ -227,9 +278,12 @@ namespace develop_timeline
             // UnitB 
             if (unitB != null)
             {
+                _unitBPlayPosition = unitB.transform.position;
+
                 if (positionB != null)
                 {
-                    unitB.transform.parent = positionB.gameObject.transform;
+                    if (IsPlayPositionParent)
+                        unitB.transform.parent = positionB.gameObject.transform;
                     unitB.transform.localPosition = Vector3.zero; // 座標を親に合わせる
                     unitB.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
 
