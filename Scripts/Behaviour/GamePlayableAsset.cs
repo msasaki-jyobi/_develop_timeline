@@ -27,6 +27,7 @@ namespace develop_timeline
         AddScore,
         SetTimeScale,
         Talk,
+        IntanceReturnKeyAdd,
     }
 
     [System.Serializable]
