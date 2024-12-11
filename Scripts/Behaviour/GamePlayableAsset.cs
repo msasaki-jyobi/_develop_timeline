@@ -26,6 +26,7 @@ namespace develop_timeline
         SecondDamage, // ThirdPlayDirectorが2の時だけダメージ判定
         AddScore,
         SetTimeScale,
+        Talk,
     }
 
     [System.Serializable]
