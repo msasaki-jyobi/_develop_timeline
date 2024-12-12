@@ -20,6 +20,8 @@ namespace develop_timeline
         public TextMeshProUGUI TimelineTextGUI;
         public CinemachineBrain Brain;
 
+        public TextFadeController TextFadeController;
+
         [Header("再生時、Unitをprivate変数に上書き")]
         public bool UnitOverwrite_UnitComponents;
         [Header("再生時、Positionでラップする")]
@@ -155,8 +157,8 @@ namespace develop_timeline
 
         public void OnSetTimelineMessage(string message)
         {
-            if (TextFadeController.Instance != null)
-                TextFadeController.Instance.UpdateMessageText(message);
+            if (TextFadeController != null)
+                TextFadeController.UpdateMessageText(message);
             else if (TimelineTextGUI != null)
                 TimelineTextGUI.text = message;
         }
