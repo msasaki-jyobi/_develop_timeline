@@ -40,9 +40,9 @@ namespace develop_timeline
         public bool IsCreatePrefab;
         public GameObject UnitAPrefab;
         public GameObject UnitBPrefab;
-        [Header("B：自動割り当てしない場合は、手動でアタッチ")]
-        private Animator _unitA;
-        private Animator _unitB;
+        //[Header("B：自動割り当てしない場合は、手動でアタッチ")]
+        //private Animator _unitA;
+        //private Animator _unitB;
         [Header("参照必須（自動生成ならからでOK）")]
         public develop_common.UnitComponents UnitAComponents;
         public develop_common.UnitComponents UnitBComponents;
@@ -80,10 +80,8 @@ namespace develop_timeline
                 unitA.gameObject.name = UnitAPrefab.name;
                 unitB.gameObject.name = UnitBPrefab.name;
 
-                await UniTask.WaitUntil(() => unitA != null);
-                await UniTask.WaitUntil(() => unitB != null);
-                ChangeUnitA(unitA.GetComponent<develop_common.UnitComponents>().Animator); // UnitComponentsにプレハブをアタッチ
-                ChangeUnitB(unitB.GetComponent<develop_common.UnitComponents>().Animator); // UnitComponentsにプレハブをアタッチ
+                ChangeUnitA(unitA); // UnitComponentsにプレハブをアタッチ
+                ChangeUnitB(unitB); // UnitComponentsにプレハブをアタッチ
             }
         }
 
@@ -97,20 +95,19 @@ namespace develop_timeline
         /// <param name="director"></param>
         public async void NormalPlayDirector(PlayableDirector director)
         {
-            if (UnitOverwrite_UnitComponents)
-            {
-                _unitA = UnitAComponents.Animator;
-                _unitB = UnitBComponents.Animator;
-            }
+            await UniTask.WaitUntil(() => UnitAComponents != null);
+            await UniTask.WaitUntil(() => UnitBComponents != null);
+
+
 
             if (IsPlayPositionsUnitBSync)
             {
-                Positions.transform.position = _unitB.transform.position;
+                Positions.transform.position = UnitBComponents.transform.position;
             }
 
-            if (_unitA.TryGetComponent<Rigidbody>(out var rigid))
+            if (UnitAComponents.TryGetComponent<Rigidbody>(out var rigid))
                 rigid.isKinematic = true;
-            if (_unitB.TryGetComponent<Rigidbody>(out var rigid2))
+            if (UnitBComponents.TryGetComponent<Rigidbody>(out var rigid2))
                 rigid2.isKinematic = true;
 
             ThirdCount = 0; // 3回カウンターリセット
@@ -125,12 +122,12 @@ namespace develop_timeline
             ActivePlayingDirector = director;
 
             if (NormalFadeTime <= 0)
-                SetDirectors(director, _unitA, _unitB, PositionA, PositionB, Brain, true);
+                SetDirectors(director, UnitAComponents, UnitBComponents, PositionA, PositionB, Brain, true);
             //director.Play();
             else
                 FadeController.Instance.ActionPlayFadeIn(() =>
                 {
-                    SetDirectors(director, _unitA, _unitB, PositionA, PositionB, Brain, true);
+                    SetDirectors(director, UnitAComponents, UnitBComponents, PositionA, PositionB, Brain, true);
                     //director.Play();
                 }, NormalFadeTime, NormalFadeTime, NormalPlayFadeColor);
         }
@@ -170,19 +167,19 @@ namespace develop_timeline
                 // 再生を実行したDirectorに「DirectorPlayer」が存在する場合
                 if (ActivePlayingDirector.gameObject.TryGetComponent<DirectorPlayer>(out var directorPlayer))
                 {
-                    if (_unitA != null)
+                    if (UnitAComponents != null)
                     {
-                        if (_unitA.TryGetComponent<Rigidbody>(out var rigidbody))
+                        if (UnitAComponents.TryGetComponent<Rigidbody>(out var rigidbody))
                             rigidbody.isKinematic = false;
-                        _unitA.transform.parent = null;
-                        _unitA = null;
+                        UnitAComponents.transform.parent = null;
+                        UnitAComponents = null;
                     }
-                    if (_unitB != null)
+                    if (UnitBComponents != null)
                     {
-                        if (_unitB.TryGetComponent<Rigidbody>(out var rigidbody))
+                        if (UnitBComponents.TryGetComponent<Rigidbody>(out var rigidbody))
                             rigidbody.isKinematic = false;
-                        _unitB.transform.parent = null;
-                        _unitB = null;
+                        UnitBComponents.transform.parent = null;
+                        UnitBComponents = null;
                     }
                     directorPlayer.OnPlayFinish();
                     Destroy(ActivePlayingDirector.gameObject);
@@ -193,16 +190,16 @@ namespace develop_timeline
                 }
                 if (IsFinishResetPos)
                 {
-                    _unitA.transform.parent = null;
-                    _unitA.transform.position = _unitAPlayPosition;
-                    _unitB.transform.parent = null;
-                    _unitB.transform.position = _unitBPlayPosition;
+                    UnitAComponents.transform.parent = null;
+                    UnitAComponents.transform.position = _unitAPlayPosition;
+                    UnitBComponents.transform.parent = null;
+                    UnitBComponents.transform.position = _unitBPlayPosition;
                 }
 
-                if (_unitA.TryGetComponent<Rigidbody>(out var rigid))
+                if (UnitAComponents.TryGetComponent<Rigidbody>(out var rigid))
                     rigid.isKinematic = false;
 
-                if (_unitB.TryGetComponent<Rigidbody>(out var rigid2))
+                if (UnitBComponents.TryGetComponent<Rigidbody>(out var rigid2))
                     rigid2.isKinematic = false;
 
                 if (IsPlayPositionsUnitBSync)
@@ -233,7 +230,7 @@ namespace develop_timeline
             Debug.Log($"Update!! name:{eventName}, value:{value}");
         }
 
-        public async void SetDirectors(PlayableDirector director, Animator unitA, Animator unitB, Animator positionA, Animator positionB, CinemachineBrain brain, bool isPlay = false)
+        public async void SetDirectors(PlayableDirector director, develop_common.UnitComponents unitA, develop_common.UnitComponents unitB, Animator positionA, Animator positionB, CinemachineBrain brain, bool isPlay = false)
         {
             var unitATrackName = "UnitA";
             var unitBTrackName = "UnitB";
@@ -259,7 +256,7 @@ namespace develop_timeline
                     // offsetどうする？キャラ大きいとか小さいとか
                     if (IsPlayPositionParent)
                         unitA.transform.parent = positionA.transform;//親を設定
-                    _unitA.transform.localPosition = Vector3.zero; // 座標を親に合わせる
+                    UnitAComponents.transform.localPosition = Vector3.zero; // 座標を親に合わせる
                     unitA.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
 
                     // ローカル座標を調整する
@@ -269,7 +266,7 @@ namespace develop_timeline
                         UnitAComponents.UnitDirectorCharacterOffset.OnSetLocalPos(director.gameObject.name, true);
                 }
                 // Bind UnitA
-                BindAnimatorTrackDirector(director, director.playableAsset, unitATrackName, unitA);
+                BindAnimatorTrackDirector(director, director.playableAsset, unitATrackName, unitA.Animator);
                 //DirectorManager.Instance._unitA = unitA.gameObject;
 
                 //if (IsKinematicA)
@@ -299,7 +296,7 @@ namespace develop_timeline
                         UnitBComponents.UnitDirectorCharacterOffset.OnSetLocalPos(director.gameObject.name, false);
                 }
                 // Bind UnitB
-                BindAnimatorTrackDirector(director, director.playableAsset, unitBTrackName, unitB);
+                BindAnimatorTrackDirector(director, director.playableAsset, unitBTrackName, unitB.Animator);
                 //DirectorManager.Instance._unitB = unitB.gameObject;
 
                 //if (IsKinematicB)
@@ -341,28 +338,26 @@ namespace develop_timeline
         /// ユニットAを書き換える
         /// </summary>
         /// <param name="unit"></param>
-        public void ChangeUnitA(Animator unit)
+        public void ChangeUnitA(GameObject unit)
         {
-            _unitA = unit;
             UnitAComponents = unit.GetComponent<develop_common.UnitComponents>();
 
             // offsetどうする？キャラ大きいとか小さいとか
-            _unitA.transform.parent = PositionA.transform;//親を設定
-            _unitA.transform.localPosition = Vector3.zero; // 座標を親に合わせる
-            _unitA.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
+            UnitAComponents.transform.parent = PositionA.transform;//親を設定
+            UnitAComponents.transform.localPosition = Vector3.zero; // 座標を親に合わせる
+            UnitAComponents.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
         }
         /// <summary>
         /// ユニットBを書き換える
         /// </summary>
-        public void ChangeUnitB(Animator unit)
+        public void ChangeUnitB(GameObject unit)
         {
-            _unitB = unit;
             UnitBComponents = unit.GetComponent<develop_common.UnitComponents>();
 
             // offsetどうする？キャラ大きいとか小さいとか
-            _unitB.transform.parent = PositionB.transform;//親を設定
-            _unitB.transform.localPosition = Vector3.zero; // 座標を親に合わせる
-            _unitB.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
+            UnitBComponents.transform.parent = PositionB.transform;//親を設定
+            UnitBComponents.transform.localPosition = Vector3.zero; // 座標を親に合わせる
+            UnitBComponents.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
         }
 
         public void SetPositionsParent(Transform parentObj)
