@@ -20,20 +20,23 @@ namespace develop_timeline
 {
     public class DirectorPlayer : SingletonMonoBehaviour<DirectorPlayer>
     {
-        [Space(10)]
-        public EBodyType OriginBodyType;
+        //[Space(10)]
+        //public EBodyType OriginBodyType;
         public List<StringEventHandle> StartEventHandles = new List<StringEventHandle>();
         public List<StringEventHandle> FinishEventHandles = new List<StringEventHandle>();
         // 終了時に実行したいパラメーター
 
-        [Space(10)]
+        //[Space(10)]
         public PlayableDirector Director;
-        public Animator PositionA;
-        public Animator PositionB;
-        public bool IsKinematicA;
-        public bool IsKinematicB;
-        public Animator InitUnitA;
-        public Animator InitUnitB;
+        public string PlayButtonKeyName = "1";
+        public string BackButtonKeyName = "2";
+        public string NormalPlayButtonKeyName = "3";
+        //public Animator PositionA;
+        //public Animator PositionB;
+        //public bool IsKinematicA;
+        //public bool IsKinematicB;
+        //public Animator InitUnitA;
+        //public Animator InitUnitB;
 
         [Space(10)]
         // 逆再生用
@@ -69,21 +72,21 @@ namespace develop_timeline
 
 
             if (Director == null) return;
-
             if (!IsPlayableControl) return;
-            // Init Play
-            if (Input.GetKeyDown(KeyCode.F))
-            {
-                Play();
 
+            // Init Play
+            if (Input.GetKeyDown(PlayButtonKeyName))
+            {
+                Director.time = 0.01f;
+                ChangePlaySpeed(Speed, ChangeTime);
             }
             // Back Play
-            if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKeyDown(BackButtonKeyName))
             {
                 ChangePlaySpeed(-Speed, ChangeTime);
             }
             // Forward Play
-            if (Input.GetKeyDown(KeyCode.D))
+            if (Input.GetKeyDown(NormalPlayButtonKeyName))
             {
                 ChangePlaySpeed(Speed, ChangeTime);
             }
@@ -91,9 +94,13 @@ namespace develop_timeline
             //{
             //    IsReversing = !IsReversing;
             //}
+
             if (Director != null)
                 if (Director.time < 0.01f)
                 {
+                    Director.time = 0.01f;
+                    ChangePlaySpeed(Speed, ChangeTime);
+                    return;
                     if (Director.state == PlayState.Playing)
                     {
                         Director.time = 0.01f;
@@ -102,10 +109,10 @@ namespace develop_timeline
                 }
         }
 
-        public void Play()
-        {
-            OnSetPlayDirector(unitA: InitUnitA, unitB: InitUnitB);
-        }
+        //public void Play()
+        //{
+        //    OnSetPlayDirector(unitA: InitUnitA, unitB: InitUnitB);
+        //}
 
         public void ChangePlaySpeed(float newSpeed, float duration)
         {
@@ -117,117 +124,117 @@ namespace develop_timeline
             }), newSpeed, duration);
         }
 
-        /// <summary>
-        /// ムービーを実行する
-        /// </summary>
-        /// <param name="Asset">実行するムービー</param>
-        /// <param name="unitB">敵のAnimator</param>
-        /// <param name="playerParent">プレイヤーの位置管理オブジェクト</param>
-        /// <param name="enemyParent">敵の位置管理オブジェクト</param>
-        public void OnSetPlayDirector(Animator unitA = null, Animator unitB = null)
-        {
-            var unitATrackName = "UnitA";
-            var unitBTrackName = "UnitB";
-            var posATrackName = "PosA";
-            var posBTrackName = "PosB";
+        ///// <summary>
+        ///// ムービーを実行する
+        ///// </summary>
+        ///// <param name="Asset">実行するムービー</param>
+        ///// <param name="unitB">敵のAnimator</param>
+        ///// <param name="playerParent">プレイヤーの位置管理オブジェクト</param>
+        ///// <param name="enemyParent">敵の位置管理オブジェクト</param>
+        //public void OnSetPlayDirector(Animator unitA = null, Animator unitB = null)
+        //{
+        //    var unitATrackName = "UnitA";
+        //    var unitBTrackName = "UnitB";
+        //    var posATrackName = "PosA";
+        //    var posBTrackName = "PosB";
 
-            DirectorManager.Instance.SetPlayDirector(Director);
+        //    DirectorManager.Instance.SetPlayDirector(Director);
 
-            _brain = DirectorManager.Instance.Brain;
+        //    _brain = DirectorManager.Instance.Brain;
 
-            // Bind Pos
-            if (PositionA != null)
-                BindAnimatorTrackDirector(Director, Director.playableAsset, posATrackName, PositionA);
-            if (PositionB != null)
-                BindAnimatorTrackDirector(Director, Director.playableAsset, posBTrackName, PositionB);
+        //    // Bind Pos
+        //    if (PositionA != null)
+        //        BindAnimatorTrackDirector(Director, Director.playableAsset, posATrackName, PositionA);
+        //    if (PositionB != null)
+        //        BindAnimatorTrackDirector(Director, Director.playableAsset, posBTrackName, PositionB);
 
-            // UnitA
-            if (unitA != null)
-            {
-                if (PositionA != null)
-                {
-                    // offsetどうする？キャラ大きいとか小さいとか
-                    unitA.transform.parent = PositionA.transform;//親を設定
-                    unitA.transform.localPosition = Vector3.zero; // 座標を親に合わせる
-                    unitA.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
+        //    // UnitA
+        //    if (unitA != null)
+        //    {
+        //        if (PositionA != null)
+        //        {
+        //            // offsetどうする？キャラ大きいとか小さいとか
+        //            unitA.transform.parent = PositionA.transform;//親を設定
+        //            unitA.transform.localPosition = Vector3.zero; // 座標を親に合わせる
+        //            unitA.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
 
-                    // ローカル座標を調整する
-                    if (unitA.TryGetComponent<UnitDirectorOffset>(out var directorOffset))
-                        unitA.transform.localPosition = directorOffset.GetBodyOffset(OriginBodyType);
-                }
-                // Bind UnitA
-                BindAnimatorTrackDirector(Director, Director.playableAsset, unitATrackName, unitA);
-                _unitA = unitA.gameObject;
-                //DirectorManager.Instance._unitA = unitA.gameObject;
+        //            // ローカル座標を調整する
+        //            if (unitA.TryGetComponent<UnitDirectorOffset>(out var directorOffset))
+        //                unitA.transform.localPosition = directorOffset.GetBodyOffset(OriginBodyType);
+        //        }
+        //        // Bind UnitA
+        //        BindAnimatorTrackDirector(Director, Director.playableAsset, unitATrackName, unitA);
+        //        _unitA = unitA.gameObject;
+        //        //DirectorManager.Instance._unitA = unitA.gameObject;
 
-                if (IsKinematicA)
-                    if (unitA.TryGetComponent<Rigidbody>(out var rigidBody))
-                        rigidBody.isKinematic = true;
-            }
+        //        if (IsKinematicA)
+        //            if (unitA.TryGetComponent<Rigidbody>(out var rigidBody))
+        //                rigidBody.isKinematic = true;
+        //    }
 
-            // UnitB 
-            if (unitB != null)
-            {
-                if (PositionB != null)
-                {
-                    unitB.transform.parent = PositionB.gameObject.transform;
-                    unitB.transform.localPosition = Vector3.zero; // 座標を親に合わせる
-                    unitB.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
+        //    // UnitB 
+        //    if (unitB != null)
+        //    {
+        //        if (PositionB != null)
+        //        {
+        //            unitB.transform.parent = PositionB.gameObject.transform;
+        //            unitB.transform.localPosition = Vector3.zero; // 座標を親に合わせる
+        //            unitB.transform.rotation = Quaternion.Euler(Vector3.zero); // 向きを親に合わせる
 
-                    // ローカル座標を調整する
-                    if (unitB.TryGetComponent<UnitDirectorOffset>(out var directorOffset))
-                    {
-                        unitB.transform.localPosition = directorOffset.GetBodyOffset(OriginBodyType);
-                        Debug.Log(unitB.transform.localPosition);
-                    }
-                }
-                // Bind UnitB
-                BindAnimatorTrackDirector(Director, Director.playableAsset, unitBTrackName, unitB);
-                _unitB = unitB.gameObject;
-                //DirectorManager.Instance._unitB = unitB.gameObject;
+        //            // ローカル座標を調整する
+        //            if (unitB.TryGetComponent<UnitDirectorOffset>(out var directorOffset))
+        //            {
+        //                unitB.transform.localPosition = directorOffset.GetBodyOffset(OriginBodyType);
+        //                Debug.Log(unitB.transform.localPosition);
+        //            }
+        //        }
+        //        // Bind UnitB
+        //        BindAnimatorTrackDirector(Director, Director.playableAsset, unitBTrackName, unitB);
+        //        _unitB = unitB.gameObject;
+        //        //DirectorManager.Instance._unitB = unitB.gameObject;
 
-                if (IsKinematicB)
-                    if (unitB.TryGetComponent<Rigidbody>(out var rigidBody))
-                        rigidBody.isKinematic = true;
-            }
+        //        if (IsKinematicB)
+        //            if (unitB.TryGetComponent<Rigidbody>(out var rigidBody))
+        //                rigidBody.isKinematic = true;
+        //    }
 
-            // Cinemachine
-            var brainTrack = Director.playableAsset.outputs.First(c => c.streamName == "Brain");
-            Director.SetGenericBinding(brainTrack.sourceObject, _brain);
+        //    // Cinemachine
+        //    var brainTrack = Director.playableAsset.outputs.First(c => c.streamName == "Brain");
+        //    Director.SetGenericBinding(brainTrack.sourceObject, _brain);
 
-            // DirectorPlay
-            Director.time = 0.01f;
-            Director.Play();
-            //DebugPlayable.Instance.ChangeSpeed(1, 0.05f);
-        }
+        //    // DirectorPlay
+        //    Director.time = 0.01f;
+        //    Director.Play();
+        //    //DebugPlayable.Instance.ChangeSpeed(1, 0.05f);
+        //}
 
-        public void OnPlayFinish()
-        {
-            if (_unitA != null)
-            {
-                _unitA.transform.parent = null;
-            }
-            if (_unitB != null)
-            {
-                _unitB.transform.parent = null;
-            }
-        }
+        //public void OnPlayFinish()
+        //{
+        //    if (_unitA != null)
+        //    {
+        //        _unitA.transform.parent = null;
+        //    }
+        //    if (_unitB != null)
+        //    {
+        //        _unitB.transform.parent = null;
+        //    }
+        //}
 
-        /// <summary>
-        /// TrackBind
-        /// </summary>
-        /// <param name="director"></param>
-        /// <param name="asset"></param>
-        /// <param name="trackName"></param>
-        /// <param name="animator"></param>
-        private void BindAnimatorTrackDirector(PlayableDirector director, PlayableAsset asset, string trackName, Animator animator)
-        {
-            // 存在すれば、指定されたディレクターにタイムラインをセット
-            if (asset != null) director.playableAsset = asset;
-            // directorにセットされてるアセットのtrackNameのトラックに引数のAnimatorをセット
-            var binding = director.playableAsset.outputs.First(c => c.streamName == trackName);
-            director.SetGenericBinding(binding.sourceObject, animator);
-        }
+        ///// <summary>
+        ///// TrackBind
+        ///// </summary>
+        ///// <param name="director"></param>
+        ///// <param name="asset"></param>
+        ///// <param name="trackName"></param>
+        ///// <param name="animator"></param>
+        //private void BindAnimatorTrackDirector(PlayableDirector director, PlayableAsset asset, string trackName, Animator animator)
+        //{
+        //    // 存在すれば、指定されたディレクターにタイムラインをセット
+        //    if (asset != null) director.playableAsset = asset;
+        //    // directorにセットされてるアセットのtrackNameのトラックに引数のAnimatorをセット
+        //    var binding = director.playableAsset.outputs.First(c => c.streamName == trackName);
+        //    director.SetGenericBinding(binding.sourceObject, animator);
+        //}
 
 
     }

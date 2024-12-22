@@ -9,14 +9,18 @@ namespace develop_timeline
     public class UnitDirectorCharacterOffset : MonoBehaviour
     {
         public bool IsStartDefaultSet;
-        public Vector3 DefaultPos = new Vector3(0, -0.65f, 0);
+
 
         public List<PlayableOffset> OffsetParameters = new List<PlayableOffset>();
-        
+
+        [Header("自動取得")]
+        public SyncOffsetTransform DefaultPos;
+
+
         private void Start()
         {
-            if (IsStartDefaultSet)
-                transform.localPosition = DefaultPos;
+            DefaultPos = GetComponent<SyncOffsetTransform>();
+            DefaultPos.OnSetTransform();
         }
 
 
@@ -30,9 +34,12 @@ namespace develop_timeline
                     {
                         transform.localPosition = offset.LocalPos;
                         transform.localRotation = Quaternion.Euler(offset.LocalRot);
+                        return;
                     }
                 }
             }
+
+            DefaultPos.OnSetTransform();
         }
     }
 

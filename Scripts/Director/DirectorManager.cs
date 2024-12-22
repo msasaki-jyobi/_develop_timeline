@@ -19,7 +19,7 @@ namespace develop_timeline
 
         public TextMeshProUGUI TimelineTextGUI;
         public CinemachineBrain Brain;
-
+        public DirectorPlayer DirectorPlayer;
         public TextFadeController TextFadeController;
 
         [Header("çƒê∂éûÅAUnitÇprivateïœêîÇ…è„èëÇ´")]
@@ -181,7 +181,7 @@ namespace develop_timeline
                         UnitBComponents.transform.parent = null;
                         UnitBComponents = null;
                     }
-                    directorPlayer.OnPlayFinish();
+                    //directorPlayer.OnPlayFinish();
                     Destroy(ActivePlayingDirector.gameObject);
 
                     foreach (var finishEvent in directorPlayer.FinishEventHandles)
@@ -237,6 +237,8 @@ namespace develop_timeline
             var posATrackName = "PosA";
             var posBTrackName = "PosB";
 
+            if (DirectorPlayer != null)
+                DirectorPlayer.Director = director;
 
             // Bind Pos
             if (positionA != null)

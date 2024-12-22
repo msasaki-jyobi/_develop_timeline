@@ -28,6 +28,7 @@ namespace develop_timeline
         SetTimeScale,
         Talk,
         IntanceReturnKeyAdd,
+        FindActiveObjectName
     }
 
     [System.Serializable]
@@ -46,12 +47,12 @@ namespace develop_timeline
         public List<TimelineSetEvent> TimelineSetEvents = new List<TimelineSetEvent>();
         public List<TimelineSetEvent> TimelineSetUnitBEvents = new List<TimelineSetEvent>();
 
-        [Header("InstanceManager：IDを指定してオブジェクト生成")]
-        public string InstanceKeyName;
-        public GameObject Prefab;
-        public bool IsParent;
-        public Vector3 SetOffsetPos;
-        public Vector3 SetRotation;
+        //[Header("InstanceManager：IDを指定してオブジェクト生成")]
+        //public string InstanceKeyName;
+        //public GameObject Prefab;
+        //public bool IsParent;
+        //public Vector3 SetOffsetPos;
+        //public Vector3 SetRotation;
 
         [Header("TextManager"), Multiline]
         public string Message;
